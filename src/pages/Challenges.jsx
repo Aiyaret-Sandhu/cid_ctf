@@ -243,7 +243,7 @@ useEffect(() => {
         
         try {
             // Get finalist count
-            const settingsDoc = await getDoc(doc(db, "settings", "eventSettings"));
+            const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
             if (settingsDoc.exists()) {
                 const settingsData = settingsDoc.data();
                 const finalistCount = settingsData.finalistCount || 1;
@@ -299,7 +299,7 @@ useEffect(() => {
     
         try {
             // Fetch the current settings to get the finalist count
-            const settingsDoc = await getDoc(doc(db, "settings", "eventSettings"));
+            const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
             if (settingsDoc.exists()) {
                 const settingsData = settingsDoc.data();
                 const finalistCount = settingsData.finalistCount || 1;

@@ -213,6 +213,7 @@ function Home() {
             });
     
             console.log("Teams loaded for leaderboard:", sortedTeams.length);
+            console.log(sortedTeams);
             setAllTeams(sortedTeams);
         } catch (error) {
             console.error("Error fetching leaderboard data:", error);

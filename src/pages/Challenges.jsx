@@ -236,6 +236,51 @@ function Challenges() {
         return true;
     };
 
+    // Add this effect near your other useEffects
+useEffect(() => {
+    const checkFinalistStatus = async () => {
+        if (!teamData || !challenges.length) return;
+        
+        try {
+            // Get finalist count
+            const settingsDoc = await getDoc(doc(db, "settings", "eventSettings"));
+            if (settingsDoc.exists()) {
+                const settingsData = settingsDoc.data();
+                const finalistCount = settingsData.finalistCount || 1;
+
+                // Check completed teams
+                const teamsRef = collection(db, "teams");
+                const teamsSnapshot = await getDocs(teamsRef);
+                
+                // Get teams that have finished all challenges
+                const completedTeams = teamsSnapshot.docs
+                    .filter(doc => {
+                        const team = doc.data();
+                        return team.solvedChallenges?.length >= challenges.length;
+                    })
+                    .map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // If enough teams have finished and this team isn't among them, redirect
+                if (completedTeams.length >= finalistCount && 
+                    !completedTeams.some(team => team.id === teamData.id)) {
+                    setSubmitResult({
+                        success: false,
+                        message: "The competition has been completed by other teams."
+                    });
+                    
+                    setTimeout(() => {
+                        navigate('/home');
+                    }, 3000);
+                }
+            }
+        } catch (error) {
+            console.error("Error checking finalist status:", error);
+        }
+    };
+
+    checkFinalistStatus();
+}, [teamData, challenges, navigate]);
+
     const handleSubmitFlag = async (e) => {
         e.preventDefault();
         if (!selectedChallenge || !flagSubmission.trim()) return;
@@ -264,15 +309,20 @@ function Challenges() {
                 const teamsSnapshot = await getDocs(teamsRef);
                 const completedTeams = teamsSnapshot.docs.filter(doc => {
                     const team = doc.data();
-                    return team.solvedChallenges?.length === challenges.length; // All challenges solved
+                    return team.solvedChallenges?.length >= challenges.length; // All challenges solved
                 });
     
-                if (completedTeams.length >= finalistCount) {
+                if (!completedTeams.some(team => team.id === teamData.id)) {
                     setSubmitResult({
                         success: false,
-                        message: "Submissions are closed as the required number of teams have completed the challenges."
+                        message: "This challenge has been completed by another team. The competition is now closed."
                     });
                     setSubmitLoading(false);
+                    
+                    // Redirect to home page after a delay
+                    setTimeout(() => {
+                        navigate('/home');
+                    }, 3000);
                     return;
                 }
             }

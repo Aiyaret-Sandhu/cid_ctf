@@ -1,0 +1,9 @@
+{
+    "rewrites": [
+      { "source": "/admin", "destination": "/" },
+      { "source": "/challenges", "destination": "/" },
+      { "source": "/challenges/:challengeId", "destination": "/" },
+      { "source": "/home", "destination": "/" },
+      { "source": "/login", "destination": "/" }
+    ]
+  }

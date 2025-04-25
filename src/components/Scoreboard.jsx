@@ -14,7 +14,7 @@ const Scoreboard = memo(({ teams: initialTeams, loading: initialLoading }) => {
     const fetchSettingsAndChallenges = async () => {
       try {
         // Get settings
-        const settingsDoc = await getDoc(doc(db, "settings", "eventSettings"));
+        const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
         if (settingsDoc.exists()) {
           setSettings(settingsDoc.data());
         }
@@ -93,7 +93,7 @@ const Scoreboard = memo(({ teams: initialTeams, loading: initialLoading }) => {
     if (teamsCompletedAll.length >= finalistCount && settings.eventStatus !== 'ended') {
       try {
         // Update event status to 'ended'
-        await updateDoc(doc(db, "settings", "eventSettings"), {
+        await updateDoc(doc(db, "settings", "eventConfig"), {
           eventStatus: 'ended',
           // Store the actual end time
           actualEndTime: new Date()

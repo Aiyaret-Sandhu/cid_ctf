@@ -197,6 +197,7 @@ function Home() {
                     name: data.name || "Unknown Team",
                     email: data.email || "",
                     score: data.score || 0,
+                    solvedChallenges: data.solvedChallenges || [],
                     completedAt: data.completedAt || null, // Ensure this field exists in Firestore
                 };
             });

@@ -87,7 +87,7 @@ function Challenges() {
     useEffect(() => {
         const checkEventStatus = async () => {
           try {
-            const settingsDoc = await getDoc(doc(db, "settings", "eventSettings"));
+            const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
             if (settingsDoc.exists()) {
               const data = settingsDoc.data();
               setEventStatus(data.eventStatus);

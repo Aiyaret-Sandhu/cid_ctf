@@ -239,46 +239,71 @@ function Challenges() {
     const handleSubmitFlag = async (e) => {
         e.preventDefault();
         if (!selectedChallenge || !flagSubmission.trim()) return;
-
+    
         // Check if event has ended
         if (eventStatus === 'ended') {
             setSubmitResult({
-            success: false,
-            message: "The competition has ended. No further submissions are being accepted."
+                success: false,
+                message: "The competition has ended. No further submissions are being accepted."
             });
             return;
         }
-        
+    
         setSubmitLoading(true);
         setSubmitResult(null);
-        
+    
         try {
+            // Fetch the current settings to get the finalist count
+            const settingsDoc = await getDoc(doc(db, "settings", "eventSettings"));
+            if (settingsDoc.exists()) {
+                const settingsData = settingsDoc.data();
+                const finalistCount = settingsData.finalistCount || 1;
+    
+                // Check how many teams have completed all challenges
+                const teamsRef = collection(db, "teams");
+                const teamsSnapshot = await getDocs(teamsRef);
+                const completedTeams = teamsSnapshot.docs.filter(doc => {
+                    const team = doc.data();
+                    return team.solvedChallenges?.length === challenges.length; // All challenges solved
+                });
+    
+                if (completedTeams.length >= finalistCount) {
+                    setSubmitResult({
+                        success: false,
+                        message: "Submissions are closed as the required number of teams have completed the challenges."
+                    });
+                    setSubmitLoading(false);
+                    return;
+                }
+            }
+    
             // Verify the flag against the stored hash
             if (!selectedChallenge.flagHash) {
-                setSubmitResult({ 
-                    success: false, 
-                    message: "This challenge doesn't have a valid flag configured. Please contact an administrator." 
+                setSubmitResult({
+                    success: false,
+                    message: "This challenge doesn't have a valid flag configured. Please contact an administrator."
                 });
+                setSubmitLoading(false);
                 return;
             }
-            
-            // Use bcrypt to compare the submitted flag with the stored hash
+    
             const flagMatches = await bcrypt.compare(flagSubmission.trim(), selectedChallenge.flagHash);
-            
+    
             if (flagMatches) {
                 // Flag is correct! Update team's solved challenges and score
                 if (teamData) {
                     const teamRef = doc(db, "teams", teamData.id);
-                    
+    
                     // Check if this challenge was already solved to prevent duplicate points
                     const solvedChallenges = teamData.solvedChallenges || [];
                     if (!solvedChallenges.includes(selectedChallenge.id)) {
                         // Update team document with the solved challenge and points
                         await updateDoc(teamRef, {
                             solvedChallenges: arrayUnion(selectedChallenge.id),
-                            score: (teamData.score || 0) + selectedChallenge.points
+                            score: (teamData.score || 0) + selectedChallenge.points,
+                            completedAt: solvedChallenges.length + 1 === challenges.length ? new Date() : null // Set completion time if all challenges are solved
                         });
-                        
+    
                         // Update local team data
                         setTeamData({
                             ...teamData,
@@ -286,22 +311,19 @@ function Challenges() {
                             score: (teamData.score || 0) + selectedChallenge.points
                         });
                     }
-                    
-                    // Check if there's a next challenge to unlock
-                    const nextChallengeIndex = currentChallengeIndex + 1;
-                    const nextChallenge = challenges[nextChallengeIndex];
-                    
-                    // Check if this was the last challenge
-                    const isLastChallenge = currentChallengeIndex === challenges.length - 1;
-                    const allSolved = isLastChallenge && areAllPreviousChallengesSolved(currentChallengeIndex, [...solvedChallenges, selectedChallenge.id], challenges);
-                    
+    
+                    // Check if all challenges are solved
+                    const allSolved = challenges.every(challenge =>
+                        [...solvedChallenges, selectedChallenge.id].includes(challenge.id)
+                    );
+    
                     if (allSolved) {
                         setSubmitResult({
                             success: true,
                             message: "Congratulations! You've completed all challenges. Redirecting to home page..."
                         });
                         setAllCompleted(true);
-                        
+    
                         // Redirect to home after delay
                         setTimeout(() => {
                             navigate('/home');
@@ -309,34 +331,25 @@ function Challenges() {
                     } else {
                         setSubmitResult({
                             success: true,
-                            message: `Correct! You've earned ${selectedChallenge.points} points.${nextChallenge ? ' Next challenge unlocked!' : ''}`
+                            message: `Correct! You've earned ${selectedChallenge.points} points.`
                         });
-                        
+    
                         // Clear the flag input
                         setFlagSubmission('');
-                        
-                        // If there's a next challenge, navigate to it after a short delay
-                        if (nextChallenge) {
-                            setTimeout(() => {
-                                setSelectedChallenge(nextChallenge);
-                                setCurrentChallengeIndex(nextChallengeIndex);
-                                navigate(`/challenges/${nextChallenge.id}`);
-                            }, 2000);
-                        }
                     }
                 }
             } else {
                 // Flag is incorrect
-                setSubmitResult({ 
-                    success: false, 
-                    message: "Incorrect flag. Try again." 
+                setSubmitResult({
+                    success: false,
+                    message: "Incorrect flag. Try again."
                 });
             }
         } catch (error) {
             console.error("Error verifying flag:", error);
-            setSubmitResult({ 
-                success: false, 
-                message: "An error occurred while submitting your flag." 
+            setSubmitResult({
+                success: false,
+                message: "An error occurred while submitting your flag."
             });
         } finally {
             setSubmitLoading(false);

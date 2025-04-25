@@ -177,43 +177,41 @@ function Home() {
         }
     };
 
-    // Fetch teams for leaderboard with better error handling
     const fetchLeaderboard = async () => {
         try {
             console.log("Fetching leaderboard data...");
             setLeaderboardLoading(true);
             const teamsRef = collection(db, "teams");
             const teamsSnapshot = await getDocs(teamsRef);
-
+    
             if (teamsSnapshot.empty) {
                 console.log("No teams found in the database");
                 setAllTeams([]);
                 return;
             }
-
+    
             const teamsList = teamsSnapshot.docs.map(doc => {
                 const data = doc.data();
                 return {
                     id: doc.id,
                     name: data.name || "Unknown Team",
                     email: data.email || "",
-                    teamLead: data.teamLead || "",
                     score: data.score || 0,
-                    solvedChallenges: data.solvedChallenges || [],
-                    completedChallenges: data.solvedChallenges?.length || 0
+                    completedAt: data.completedAt || null, // Ensure this field exists in Firestore
                 };
             });
-
-            // Sort by score (highest first)
+    
+            // Sort by score (highest first), then by completion time (earliest first)
             const sortedTeams = teamsList.sort((a, b) => {
-                // First sort by score
-                const scoreDiff = (b.score || 0) - (a.score || 0);
-                if (scoreDiff !== 0) return scoreDiff;
-
-                // If scores are equal, sort by number of challenges completed
-                return (b.solvedChallenges?.length || 0) - (a.solvedChallenges?.length || 0);
+                if (b.score !== a.score) {
+                    return b.score - a.score; // Higher score first
+                }
+                if (a.completedAt && b.completedAt) {
+                    return a.completedAt.toMillis() - b.completedAt.toMillis(); // Earlier completion first
+                }
+                return 0; // If no completion time, keep order
             });
-
+    
             console.log("Teams loaded for leaderboard:", sortedTeams.length);
             setAllTeams(sortedTeams);
         } catch (error) {

@@ -72,7 +72,7 @@ function App() {
             } />
             
             {/* Protected Admin page */}
-            <Route path="/osc/cidctf/admin" element={
+            <Route path="/admin" element={
               <ProtectedRoute>
                 <Admin />
               </ProtectedRoute>

@@ -88,20 +88,24 @@ function Challenges() {
         const checkEventStatus = async () => {
             try {
                 const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
+                console.log("Settings document exists:", settingsDoc.exists());
                 if (settingsDoc.exists()) {
                     const data = settingsDoc.data();
+                    console.log("Settings data:", data); // Log all settings data
                     setEventStatus(data.eventStatus);
-
+                    
                     // If event has ended, redirect to home
                     if (data.eventStatus === 'ended') {
                         navigate('/home');
                     }
+                } else {
+                    console.log("Settings document does not exist");
                 }
             } catch (error) {
                 console.error("Error checking event status:", error);
             }
         };
-
+        
         checkEventStatus();
     }, [navigate]);
 
@@ -283,7 +287,7 @@ function Challenges() {
 
         checkFinalistStatus();
     }, [teamData, challenges, navigate]);
-    
+
     const handleSubmitFlag = async (e) => {
         e.preventDefault();
         if (!selectedChallenge || !flagSubmission.trim()) return;

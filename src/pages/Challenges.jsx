@@ -277,7 +277,7 @@ function Challenges() {
 
                         setTimeout(() => {
                             navigate('/home');
-                        }, 3000);
+                        }, 6000);
                     }
                 }
             } catch (error) {
@@ -333,7 +333,7 @@ function Challenges() {
                     // Redirect to home page after a delay
                     setTimeout(() => {
                         navigate('/home');
-                    }, 3000);
+                    }, 6000);
                     return;
                 }
             }

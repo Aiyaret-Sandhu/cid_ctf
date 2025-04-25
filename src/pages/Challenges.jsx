@@ -31,12 +31,12 @@ function Challenges() {
     // Check if all challenges are completed and redirect to home if they are
     useEffect(() => {
         if (teamData?.solvedChallenges && challenges.length > 0) {
-            const allSolved = challenges.every(challenge => 
+            const allSolved = challenges.every(challenge =>
                 teamData.solvedChallenges.includes(challenge.id)
             );
-            
+
             setAllCompleted(allSolved);
-            
+
             // If all challenges are completed and we're viewing the last challenge,
             // redirect to home after a delay
             if (allSolved && !submitResult) {
@@ -44,7 +44,7 @@ function Challenges() {
                     success: true,
                     message: "Congratulations! You've completed all challenges. Redirecting to home page..."
                 });
-                
+
                 setTimeout(() => {
                     navigate('/home');
                 }, 5000); // 5 second delay before redirecting
@@ -56,7 +56,7 @@ function Challenges() {
     useEffect(() => {
         const fetchTeamData = async () => {
             if (!user) return;
-            
+
             try {
                 const teamsRef = collection(db, "teams");
                 const teamQuery = query(teamsRef, where("email", "==", user.email));
@@ -66,7 +66,7 @@ function Challenges() {
                     const teamDoc = teamSnapshot.docs[0];
                     const team = { id: teamDoc.id, ...teamDoc.data() };
                     setTeamData(team);
-                    
+
                     // Initialize solvedChallenges if it doesn't exist
                     if (!team.solvedChallenges) {
                         await updateDoc(doc(db, "teams", team.id), {
@@ -86,24 +86,24 @@ function Challenges() {
 
     useEffect(() => {
         const checkEventStatus = async () => {
-          try {
-            const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
-            if (settingsDoc.exists()) {
-              const data = settingsDoc.data();
-              setEventStatus(data.eventStatus);
-              
-              // If event has ended, redirect to home
-              if (data.eventStatus === 'ended') {
-                navigate('/home');
-              }
+            try {
+                const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
+                if (settingsDoc.exists()) {
+                    const data = settingsDoc.data();
+                    setEventStatus(data.eventStatus);
+
+                    // If event has ended, redirect to home
+                    if (data.eventStatus === 'ended') {
+                        navigate('/home');
+                    }
+                }
+            } catch (error) {
+                console.error("Error checking event status:", error);
             }
-          } catch (error) {
-            console.error("Error checking event status:", error);
-          }
         };
-        
+
         checkEventStatus();
-      }, [navigate]);
+    }, [navigate]);
 
     // Fetch available challenges
     useEffect(() => {
@@ -113,7 +113,7 @@ function Challenges() {
                 const challengesRef = collection(db, "challenges");
                 const activeChallengesQuery = query(challengesRef, where("active", "==", true));
                 const challengesSnapshot = await getDocs(activeChallengesQuery);
-                
+
                 // Sort challenges by createdAt timestamp
                 let challengesList = challengesSnapshot.docs.map(doc => ({
                     id: doc.id,
@@ -128,18 +128,18 @@ function Challenges() {
                     // Fallback to points as a sorting mechanism if no timestamp
                     return a.points - b.points;
                 });
-                
+
                 setChallenges(challengesList);
-                
+
                 // If team data is available, determine current challenge index
                 if (teamData && teamData.solvedChallenges) {
                     const lastSolvedIndex = findLastSolvedChallengeIndex(teamData.solvedChallenges, challengesList);
                     setCurrentChallengeIndex(Math.min(lastSolvedIndex + 1, challengesList.length - 1));
-                    
+
                     // Check if all challenges are solved
-                    const allSolved = challengesList.length > 0 && 
+                    const allSolved = challengesList.length > 0 &&
                         challengesList.every(c => teamData.solvedChallenges.includes(c.id));
-                    
+
                     if (allSolved) {
                         setAllCompleted(true);
                         setTimeout(() => {
@@ -148,12 +148,12 @@ function Challenges() {
                         return;
                     }
                 }
-                
+
                 // If there's a challengeId in the URL, verify it's the current accessible challenge
                 if (challengeId) {
                     // Find the challenge in the sorted list
                     const challengeIndex = challengesList.findIndex(c => c.id === challengeId);
-                    
+
                     // If challenge exists and is accessible (based on solved challenges)
                     if (challengeIndex !== -1 && isChallengeAccessible(challengeIndex, teamData?.solvedChallenges, challengesList)) {
                         setSelectedChallenge(challengesList[challengeIndex]);
@@ -184,14 +184,14 @@ function Challenges() {
     // Helper function to find the index of the last solved challenge
     const findLastSolvedChallengeIndex = (solvedChallenges, challengesList) => {
         if (!solvedChallenges || solvedChallenges.length === 0) return -1;
-        
+
         // Go through the challenges list in reverse order to find the last solved challenge
         for (let i = challengesList.length - 1; i >= 0; i--) {
             if (solvedChallenges.includes(challengesList[i].id)) {
                 return i;
             }
         }
-        
+
         return -1;
     };
 
@@ -199,14 +199,14 @@ function Challenges() {
     const findFirstAccessibleChallengeIndex = (solvedChallenges, challengesList) => {
         // If there are no solved challenges, return the first challenge
         if (!solvedChallenges || solvedChallenges.length === 0) return 0;
-        
+
         // Find the first challenge that hasn't been solved yet
         for (let i = 0; i < challengesList.length; i++) {
             if (!solvedChallenges.includes(challengesList[i].id)) {
                 return i;
             }
         }
-        
+
         // If all challenges are solved, return the last one
         return challengesList.length - 1;
     };
@@ -215,10 +215,10 @@ function Challenges() {
     const isChallengeAccessible = (index, solvedChallenges, challengesList) => {
         // First challenge is always accessible
         if (index === 0) return true;
-        
+
         // If no solved challenges, only the first challenge is accessible
         if (!solvedChallenges || solvedChallenges.length === 0) return index === 0;
-        
+
         // A challenge is accessible if the previous challenge is solved
         const previousChallengeId = challengesList[index - 1]?.id;
         return previousChallengeId && solvedChallenges.includes(previousChallengeId);
@@ -227,7 +227,7 @@ function Challenges() {
     // Check if all previous challenges are solved (for showing completion message)
     const areAllPreviousChallengesSolved = (currentIndex, solvedChallenges, challengesList) => {
         if (currentIndex <= 0) return true;
-        
+
         for (let i = 0; i < currentIndex; i++) {
             if (!solvedChallenges.includes(challengesList[i].id)) {
                 return false;
@@ -237,54 +237,57 @@ function Challenges() {
     };
 
     // Add this effect near your other useEffects
-useEffect(() => {
-    const checkFinalistStatus = async () => {
-        if (!teamData || !challenges.length) return;
-        
-        try {
-            // Get finalist count
-            const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
-            if (settingsDoc.exists()) {
-                const settingsData = settingsDoc.data();
-                const finalistCount = settingsData.finalistCount || 1;
+    useEffect(() => {
+        const checkFinalistStatus = async () => {
+            if (!teamData || !challenges.length) return;
 
-                // Check completed teams
-                const teamsRef = collection(db, "teams");
-                const teamsSnapshot = await getDocs(teamsRef);
-                
-                // Get teams that have finished all challenges
-                const completedTeams = teamsSnapshot.docs
-                    .filter(doc => {
-                        const team = doc.data();
-                        return team.solvedChallenges?.length >= challenges.length;
-                    })
-                    .map(doc => ({ id: doc.id, ...doc.data() }));
+            try {
+                // Get finalist count
+                const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
+                if (settingsDoc.exists()) {
+                    const settingsData = settingsDoc.data();
+                    const finalistCount = settingsData.finalistCount || 1;
 
-                // If enough teams have finished and this team isn't among them, redirect
-                if (completedTeams.length >= finalistCount && 
-                    !completedTeams.some(team => team.id === teamData.id)) {
-                    setSubmitResult({
-                        success: false,
-                        message: "The competition has been completed by other teams."
-                    });
-                    
-                    setTimeout(() => {
-                        navigate('/home');
-                    }, 3000);
+                    // Check completed teams
+                    const teamsRef = collection(db, "teams");
+                    const teamsSnapshot = await getDocs(teamsRef);
+
+                    // Get teams that have finished all challenges
+                    const completedTeams = teamsSnapshot.docs
+                        .filter(doc => {
+                            const team = doc.data();
+                            return team.solvedChallenges?.length >= challenges.length;
+                        })
+                        .map(doc => ({ id: doc.id, ...doc.data() }));
+
+                    console.log("Completed teams:", completedTeams.length, "Finalist count:", finalistCount);
+                    console.log("Current team is finalist:", completedTeams.some(team => team.id === teamData.id));
+
+                    // If enough teams have finished and this team isn't among them, redirect
+                    if (completedTeams.length >= finalistCount &&
+                        !completedTeams.some(team => team.id === teamData.id)) {
+                        setSubmitResult({
+                            success: false,
+                            message: "The competition has been completed by other teams."
+                        });
+
+                        setTimeout(() => {
+                            navigate('/home');
+                        }, 3000);
+                    }
                 }
+            } catch (error) {
+                console.error("Error checking finalist status:", error);
             }
-        } catch (error) {
-            console.error("Error checking finalist status:", error);
-        }
-    };
+        };
 
-    checkFinalistStatus();
-}, [teamData, challenges, navigate]);
-
+        checkFinalistStatus();
+    }, [teamData, challenges, navigate]);
+    
     const handleSubmitFlag = async (e) => {
         e.preventDefault();
         if (!selectedChallenge || !flagSubmission.trim()) return;
-    
+
         // Check if event has ended
         if (eventStatus === 'ended') {
             setSubmitResult({
@@ -293,32 +296,36 @@ useEffect(() => {
             });
             return;
         }
-    
+
         setSubmitLoading(true);
         setSubmitResult(null);
-    
+
         try {
             // Fetch the current settings to get the finalist count
             const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
             if (settingsDoc.exists()) {
                 const settingsData = settingsDoc.data();
                 const finalistCount = settingsData.finalistCount || 1;
-    
+
                 // Check how many teams have completed all challenges
                 const teamsRef = collection(db, "teams");
                 const teamsSnapshot = await getDocs(teamsRef);
-                const completedTeams = teamsSnapshot.docs.filter(doc => {
-                    const team = doc.data();
-                    return team.solvedChallenges?.length >= challenges.length; // All challenges solved
-                });
-    
-                if (!completedTeams.some(team => team.id === teamData.id)) {
+                const completedTeams = teamsSnapshot.docs
+                    .filter(doc => {
+                        const team = doc.data();
+                        return team.solvedChallenges?.length >= challenges.length; // All challenges solved
+                    })
+                    .map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // Check if enough teams have already finished and this team is not among them
+                if (completedTeams.length >= finalistCount &&
+                    !completedTeams.some(team => team.id === teamData.id)) {
                     setSubmitResult({
                         success: false,
-                        message: "This challenge has been completed by another team. The competition is now closed."
+                        message: "This challenge has been completed by other teams. The competition is now closed."
                     });
                     setSubmitLoading(false);
-                    
+
                     // Redirect to home page after a delay
                     setTimeout(() => {
                         navigate('/home');
@@ -326,7 +333,7 @@ useEffect(() => {
                     return;
                 }
             }
-    
+
             // Verify the flag against the stored hash
             if (!selectedChallenge.flagHash) {
                 setSubmitResult({
@@ -336,44 +343,54 @@ useEffect(() => {
                 setSubmitLoading(false);
                 return;
             }
-    
+
             const flagMatches = await bcrypt.compare(flagSubmission.trim(), selectedChallenge.flagHash);
-    
+
             if (flagMatches) {
                 // Flag is correct! Update team's solved challenges and score
                 if (teamData) {
                     const teamRef = doc(db, "teams", teamData.id);
-    
+
                     // Check if this challenge was already solved to prevent duplicate points
                     const solvedChallenges = teamData.solvedChallenges || [];
                     if (!solvedChallenges.includes(selectedChallenge.id)) {
-                        // Update team document with the solved challenge and points
-                        await updateDoc(teamRef, {
-                            solvedChallenges: arrayUnion(selectedChallenge.id),
-                            score: (teamData.score || 0) + selectedChallenge.points,
-                            completedAt: solvedChallenges.length + 1 === challenges.length ? new Date() : null // Set completion time if all challenges are solved
-                        });
-    
-                        // Update local team data
-                        setTeamData({
-                            ...teamData,
-                            solvedChallenges: [...solvedChallenges, selectedChallenge.id],
-                            score: (teamData.score || 0) + selectedChallenge.points
-                        });
+                        try {
+                            // Update team document with the solved challenge and points
+                            await updateDoc(teamRef, {
+                                solvedChallenges: arrayUnion(selectedChallenge.id),
+                                score: (teamData.score || 0) + selectedChallenge.points,
+                                completedAt: solvedChallenges.length + 1 === challenges.length ? new Date() : null // Set completion time if all challenges are solved
+                            });
+
+                            // Update local team data
+                            setTeamData({
+                                ...teamData,
+                                solvedChallenges: [...solvedChallenges, selectedChallenge.id],
+                                score: (teamData.score || 0) + selectedChallenge.points
+                            });
+                        } catch (updateError) {
+                            console.error("Error updating team document:", updateError);
+                            setSubmitResult({
+                                success: false,
+                                message: "Error updating team score. Please try again."
+                            });
+                            setSubmitLoading(false);
+                            return;
+                        }
                     }
-    
+
                     // Check if all challenges are solved
                     const allSolved = challenges.every(challenge =>
                         [...solvedChallenges, selectedChallenge.id].includes(challenge.id)
                     );
-    
+
                     if (allSolved) {
                         setSubmitResult({
                             success: true,
                             message: "Congratulations! You've completed all challenges. Redirecting to home page..."
                         });
                         setAllCompleted(true);
-    
+
                         // Redirect to home after delay
                         setTimeout(() => {
                             navigate('/home');
@@ -383,7 +400,7 @@ useEffect(() => {
                             success: true,
                             message: `Correct! You've earned ${selectedChallenge.points} points.`
                         });
-    
+
                         // Clear the flag input
                         setFlagSubmission('');
                     }
@@ -476,7 +493,7 @@ useEffect(() => {
                             </svg>
                             CID CTF Platform
                         </Link>
-                        
+
                         {teamData && (
                             <div className="flex items-center text-white bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-lg border border-white/30">
                                 <span className="mr-2 font-medium">Final Score:</span>
@@ -507,12 +524,12 @@ useEffect(() => {
                         </div>
                         <h2 className="text-2xl font-bold text-green-800 mb-4">Congratulations!</h2>
                         <p className="text-lg text-green-700 mb-4">
-                            You've successfully completed all challenges! 
+                            You've successfully completed all challenges!
                         </p>
                         <p className="text-md text-green-600 mb-8">
                             Your final score: <span className="font-bold">{teamData?.score || 0}</span> points.
                         </p>
-                        
+
                         <div className="animate-pulse text-sm text-green-500">
                             Redirecting to home page...
                         </div>
@@ -534,7 +551,7 @@ useEffect(() => {
                         </svg>
                         CID CTF Platform
                     </Link>
-                    
+
                     {teamData && (
                         <div className="flex items-center text-white bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-lg border border-white/30">
                             <span className="mr-2 font-medium">Score:</span>
@@ -569,10 +586,10 @@ useEffect(() => {
                     </div>
                     <div className="relative pt-1">
                         <div className="overflow-hidden h-2 text-xs flex rounded bg-indigo-100">
-                            <div 
-                                style={{ 
-                                    width: `${((teamData?.solvedChallenges?.length || 0) * 100) / challenges.length}%` 
-                                }} 
+                            <div
+                                style={{
+                                    width: `${((teamData?.solvedChallenges?.length || 0) * 100) / challenges.length}%`
+                                }}
                                 className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-500"
                             ></div>
                         </div>
@@ -605,8 +622,8 @@ useEffect(() => {
 
                             {selectedChallenge.imageUrl && (
                                 <div className="mt-6 mb-8 flex justify-center">
-                                    <img 
-                                        src={selectedChallenge.imageUrl} 
+                                    <img
+                                        src={selectedChallenge.imageUrl}
                                         alt={selectedChallenge.title}
                                         className="max-w-full rounded-lg border border-gray-200 shadow-sm"
                                         style={{ maxHeight: '400px' }}
@@ -641,7 +658,7 @@ useEffect(() => {
                                             You've already solved this challenge!
                                         </p>
                                     </div>
-                                    
+
                                     {/* Show button to next unsolved challenge if available */}
                                     {currentChallengeIndex < challenges.length - 1 && isChallengeAccessible(currentChallengeIndex + 1, teamData.solvedChallenges, challenges) && (
                                         <div className="mt-3 flex justify-end">
@@ -674,9 +691,8 @@ useEffect(() => {
                                             />
                                             <button
                                                 type="submit"
-                                                className={`ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
-                                                    submitLoading ? "bg-gray-400" : "bg-indigo-600 hover:bg-indigo-700"
-                                                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                                                className={`ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${submitLoading ? "bg-gray-400" : "bg-indigo-600 hover:bg-indigo-700"
+                                                    } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                                                 disabled={submitLoading}
                                             >
                                                 {submitLoading ? (
@@ -693,7 +709,7 @@ useEffect(() => {
                                             </button>
                                         </div>
                                     </form>
-                                    
+
                                     {submitResult && (
                                         <div className={`mt-3 p-3 rounded-md ${submitResult.success ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
                                             <p className={`text-sm flex items-center ${submitResult.success ? 'text-green-700' : 'text-red-700'}`}>
@@ -708,7 +724,7 @@ useEffect(() => {
                                                 )}
                                                 {submitResult.message}
                                             </p>
-                                            
+
                                             {/* If this message indicates all challenges are completed, add a countdown */}
                                             {submitResult.message.includes("Redirecting") && (
                                                 <div className="mt-2 text-center">
@@ -733,7 +749,7 @@ useEffect(() => {
                             const isSolved = teamData?.solvedChallenges?.includes(challenge.id);
                             const isAccessible = isChallengeAccessible(index, teamData?.solvedChallenges, challenges);
                             const isCurrent = currentChallengeIndex === index;
-                            
+
                             return (
                                 <button
                                     key={challenge.id}
@@ -741,10 +757,10 @@ useEffect(() => {
                                     disabled={!isAccessible}
                                     className={`w-10 h-10 flex items-center justify-center rounded-full font-medium text-sm
                                         ${isCurrent ? 'ring-2 ring-offset-2 ring-indigo-500 ' : ''}
-                                        ${isSolved 
-                                            ? 'bg-green-100 text-green-800 border border-green-300' 
-                                            : isAccessible 
-                                                ? 'bg-indigo-100 text-indigo-800 border border-indigo-300 hover:bg-indigo-200' 
+                                        ${isSolved
+                                            ? 'bg-green-100 text-green-800 border border-green-300'
+                                            : isAccessible
+                                                ? 'bg-indigo-100 text-indigo-800 border border-indigo-300 hover:bg-indigo-200'
                                                 : 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
                                         }`}
                                     title={isAccessible ? challenge.title : "Locked Challenge"}

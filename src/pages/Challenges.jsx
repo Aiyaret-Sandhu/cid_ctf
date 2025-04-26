@@ -4,7 +4,6 @@ import { db, auth } from '../firebase';
 import { collection, query, where, getDocs, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import bcrypt from 'bcryptjs';
-import { useState, useEffect, useRef } from 'react';
 
 // import ReactDOM from 'react-dom';
 

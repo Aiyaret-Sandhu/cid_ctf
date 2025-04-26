@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { db, auth } from '../firebase';
 import { collection, query, where, getDocs, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import bcrypt from 'bcryptjs';
+// import ReactDOM from 'react-dom';
 
 function Challenges() {
     const [user, setUser] = useState(null);
@@ -17,8 +18,504 @@ function Challenges() {
     const [submitLoading, setSubmitLoading] = useState(false);
     const [allCompleted, setAllCompleted] = useState(false);
     const [eventStatus, setEventStatus] = useState(null);
+
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [tabSwitchCount, setTabSwitchCount] = useState(0);
+    const [attemptedChallenges, setAttemptedChallenges] = useState([]);
+    const [showFullscreenDialog, setShowFullscreenDialog] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showExitDialog, setShowExitDialog] = useState(false);
+
+    const fullscreenRef = useRef(null);
+
     const { challengeId } = useParams();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (selectedChallenge && !isFullscreen) {
+            const isAttempted = teamData?.attemptedChallenges?.includes(selectedChallenge.id);
+
+            // Only show dialog for challenges that haven't been attempted yet
+            if (!isAttempted) {
+                console.log("Showing fullscreen dialog");
+                setShowFullscreenDialog(true);
+
+                // Clear any existing "force fullscreen" intervals
+                const existingIntervals = window._fullscreenCheckIntervals || [];
+                existingIntervals.forEach(clearInterval);
+                window._fullscreenCheckIntervals = [];
+            } else {
+                // For attempted challenges, just navigate back to challenges without fullscreen
+                navigate('/challenges');
+            }
+        }
+    }, [selectedChallenge, isFullscreen, teamData?.attemptedChallenges, navigate]);
+
+    //
+
+    const FullscreenDialog = () => (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+            <div className="bg-white p-8 rounded-lg max-w-md w-full">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Enter Fullscreen Mode</h3>
+                <p className="mb-6 text-gray-600">
+                    This challenge requires fullscreen mode. Tab switches will be counted and may affect your ability to submit the flag.
+                    You cannot exit fullscreen without submitting your answer.
+                </p>
+                <div className="flex justify-between">
+                    <button
+                        onClick={() => {
+                            setSelectedChallenge(null);
+                            setShowFullscreenDialog(false);
+                            navigate('/challenges');
+                        }}
+                        className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={() => {
+                            enterFullscreen();
+                            setShowFullscreenDialog(false);
+                        }}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg flex items-center"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z" clipRule="evenodd" />
+                        </svg>
+                        Enter Fullscreen
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
+    const ExitFullscreenDialog = ({ onStay, onExit }) => {
+        return (
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-80">
+                <div className="bg-white p-8 rounded-lg max-w-md w-full border-4 border-red-500">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Exit Challenge?</h3>
+                    <p className="mb-6 text-gray-600">
+                        Are you sure you want to exit this challenge? This will mark the challenge as attempted and you cannot try it again.
+                    </p>
+                    <div className="flex justify-between">
+                        <button
+                            onClick={onStay}
+                            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg"
+                        >
+                            Stay in Challenge
+                        </button>
+                        <button
+                            onClick={onExit}
+                            className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg flex items-center"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path
+                                    fillRule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                            Exit Challenge
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+
+
+    // Update the enterFullscreen function to better handle tab visibility
+    const enterFullscreen = () => {
+        if (fullscreenRef.current) {
+            try {
+                if (document.fullscreenElement) {
+                    // Already in fullscreen, no need to request again
+                    setIsFullscreen(true);
+                    return;
+                }
+
+                if (fullscreenRef.current.requestFullscreen) {
+                    fullscreenRef.current.requestFullscreen();
+                } else if (fullscreenRef.current.mozRequestFullScreen) {
+                    fullscreenRef.current.mozRequestFullScreen();
+                } else if (fullscreenRef.current.webkitRequestFullscreen) {
+                    fullscreenRef.current.webkitRequestFullscreen();
+                } else if (fullscreenRef.current.msRequestFullscreen) {
+                    fullscreenRef.current.msRequestFullscreen();
+                }
+
+                setIsFullscreen(true);
+
+                // Listen for visibilitychange immediately after entering fullscreen
+                document.addEventListener('visibilitychange', handleVisibilityChange);
+                window.addEventListener('blur', handleFocusChange);
+
+                // Ensure content is scrollable in fullscreen mode
+                if (fullscreenRef.current) {
+                    fullscreenRef.current.style.overflow = "auto";
+                    fullscreenRef.current.style.height = "100vh";
+                }
+
+                // Reset tab switch counter when entering fullscreen for a new challenge
+                setTabSwitchCount(0);
+            } catch (error) {
+                console.error("Error entering fullscreen:", error);
+                // Show fallback message if fullscreen fails
+                alert("Your browser couldn't enter fullscreen mode. Please ensure you've allowed fullscreen permissions.");
+            }
+        }
+    };
+
+    // Add exit handler functions that need to be scoped outside of useEffect
+    const handleVisibilityChange = () => {
+        if (document.hidden && selectedChallenge) {
+            setTabSwitchCount(prev => prev + 1);
+            console.log("User switched tabs or minimized window");
+        }
+    };
+
+    const handleFocusChange = () => {
+        if (selectedChallenge) {
+            setTabSwitchCount(prev => prev + 1);
+            console.log("User switched window focus");
+        }
+    };
+
+
+    // // Improved enterFullscreen function with better browser compatibility
+    // const enterFullscreen = () => {
+    //     if (fullscreenRef.current) {
+    //         try {
+    //             if (document.fullscreenElement) {
+    //                 // Already in fullscreen, no need to request again
+    //                 setIsFullscreen(true);
+    //                 return;
+    //             }
+
+    //             if (fullscreenRef.current.requestFullscreen) {
+    //                 fullscreenRef.current.requestFullscreen();
+    //             } else if (fullscreenRef.current.mozRequestFullScreen) {
+    //                 fullscreenRef.current.mozRequestFullScreen();
+    //             } else if (fullscreenRef.current.webkitRequestFullscreen) {
+    //                 fullscreenRef.current.webkitRequestFullscreen();
+    //             } else if (fullscreenRef.current.msRequestFullscreen) {
+    //                 fullscreenRef.current.msRequestFullscreen();
+    //             }
+
+    //             setIsFullscreen(true);
+    //             console.log("Entered fullscreen mode");
+
+    //             // Ensure content is scrollable in fullscreen mode
+    //             if (fullscreenRef.current) {
+    //                 fullscreenRef.current.style.overflow = "auto";
+    //                 fullscreenRef.current.style.height = "100vh";
+    //             }
+
+    //             // Reset tab switch counter when entering fullscreen for a new challenge
+    //             setTabSwitchCount(0);
+    //         } catch (error) {
+    //             console.error("Error entering fullscreen:", error);
+    //             // Show fallback message if fullscreen fails
+    //             alert("Your browser couldn't enter fullscreen mode. Please ensure you've allowed fullscreen permissions.");
+    //         }
+    //     }
+    // };
+
+    // Clean up event listeners when component unmounts
+    useEffect(() => {
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('blur', handleFocusChange);  // <-- This was wrong (addEventListener instead of removeEventListener)
+        };
+    }, []);
+
+    // Function to exit fullscreen
+    const exitFullscreen = () => {
+        try {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) { // Firefox
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { // IE/Edge
+                document.msExitFullscreen();
+            }
+            setIsFullscreen(false);
+            console.log("Exited fullscreen mode");
+        } catch (error) {
+            console.error("Error exiting fullscreen:", error);
+        }
+    };
+
+    useEffect(() => {
+        let escKeyProcessing = false;
+
+        const handleFullscreenChange = () => {
+            const isCurrentlyFullscreen = document.fullscreenElement ||
+                document.webkitFullscreenElement ||
+                document.mozFullScreenElement ||
+                document.msFullscreenElement;
+
+            console.log("Fullscreen state changed:", isCurrentlyFullscreen ? "in fullscreen" : "exiting fullscreen");
+
+            // If we're exiting fullscreen unexpectedly (via ESC key)
+            if (!isCurrentlyFullscreen && isFullscreen && selectedChallenge && !escKeyProcessing) {
+                // If we're not already showing the exit dialog
+                if (!isSubmitting && !showExitDialog) {
+                    console.log("Intercepting ESC key fullscreen exit");
+
+                    // Prevent multiple handlers from running at once
+                    escKeyProcessing = true;
+
+                    // Increment tab switch count
+                    const newTabSwitchCount = tabSwitchCount + 1;
+                    setTabSwitchCount(newTabSwitchCount);
+
+                    // Update the tab switch count in the database
+                    if (teamData && selectedChallenge) {
+                        const teamRef = doc(db, "teams", teamData.id);
+                        updateDoc(teamRef, {
+                            [`challengeAttempts.${selectedChallenge.id}.tabSwitches`]: newTabSwitchCount
+                        }).catch(error => {
+                            console.error("Error updating tab switch count:", error);
+                        });
+                    }
+
+                    // Show the dialog
+                    setShowExitDialog(true);
+
+                    // Re-enter fullscreen mode immediately
+                    if (fullscreenRef.current) {
+                        try {
+                            if (fullscreenRef.current.requestFullscreen) {
+                                fullscreenRef.current.requestFullscreen();
+                            } else if (fullscreenRef.current.mozRequestFullScreen) {
+                                fullscreenRef.current.mozRequestFullScreen();
+                            } else if (fullscreenRef.current.webkitRequestFullscreen) {
+                                fullscreenRef.current.webkitRequestFullscreen();
+                            } else if (fullscreenRef.current.msRequestFullscreen) {
+                                fullscreenRef.current.msRequestFullscreen();
+                            }
+                        } catch (error) {
+                            console.error("Error re-entering fullscreen:", error);
+                        }
+                    }
+
+                    // Reset the processing flag after a short delay
+                    setTimeout(() => {
+                        escKeyProcessing = false;
+                    }, 100);
+                }
+
+                // Return without updating isFullscreen state
+                return;
+            }
+
+            // For all other cases, update the fullscreen state normally
+            if (!escKeyProcessing) {
+                setIsFullscreen(!!isCurrentlyFullscreen);
+            }
+        };
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+            document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+            document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+        };
+    }, [isFullscreen, selectedChallenge, isSubmitting, showExitDialog, tabSwitchCount, teamData]);
+
+
+    const showExitConfirmation = () => {
+        // Increment tab switch count when exit dialog is shown
+        setTabSwitchCount(prev => prev + 1);
+        console.log("Exit dialog opened - counted as tab switch");
+
+        // Show exit dialog while still in fullscreen
+        setShowExitDialog(true);
+
+        // Also update the tab switch count in the database
+        if (teamData && selectedChallenge) {
+            const teamRef = doc(db, "teams", teamData.id);
+            updateDoc(teamRef, {
+                [`challengeAttempts.${selectedChallenge.id}.tabSwitches`]: tabSwitchCount + 1
+            }).catch(error => {
+                console.error("Error updating tab switch count:", error);
+            });
+        }
+    };
+    // useEffect(() => {
+    //     // Auto enter fullscreen as soon as a challenge is selected
+    //     if (selectedChallenge) {
+    //         enterFullscreen();
+    //     }
+    // }, [selectedChallenge]); 
+
+    // Track tab visibility changes
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden && selectedChallenge) {
+                setTabSwitchCount(prev => prev + 1);
+                console.log("User switched tabs or minimized window");
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [selectedChallenge]);
+
+    const handleSubmitAndExit = () => {
+        setIsSubmitting(true);
+
+        // First mark as attempted
+        if (teamData && !teamData.attemptedChallenges?.includes(selectedChallenge.id)) {
+            const updateAttempted = async () => {
+                try {
+                    const teamRef = doc(db, "teams", teamData.id);
+                    await updateDoc(teamRef, {
+                        attemptedChallenges: arrayUnion(selectedChallenge.id)
+                    });
+                } catch (error) {
+                    console.error("Error marking challenge as attempted:", error);
+                }
+            };
+            updateAttempted();
+        }
+
+        // Now we can safely exit and navigate away
+        exitFullscreen();
+        navigate('/challenges');
+    };
+
+    // useEffect(() => {
+    //     let intervalId;
+
+    //     if (selectedChallenge) {
+    //         // Use a less frequent interval and only attempt to enter fullscreen
+    //         // if we're not already in fullscreen mode
+    //         intervalId = setInterval(() => {
+    //             const isCurrentlyFullscreen = document.fullscreenElement ||
+    //                 document.webkitFullscreenElement ||
+    //                 document.mozFullScreenElement ||
+    //                 document.msFullscreenElement;
+
+    //             if (!isCurrentlyFullscreen && !isSubmitting) {
+    //                 // Don't log repeatedly to reduce console spam
+    //                 enterFullscreen();
+    //             }
+    //         }, 5000); // Check less frequently - every 5 seconds
+    //     }
+
+    //     return () => {
+    //         if (intervalId) {
+    //             clearInterval(intervalId);
+    //         }
+    //     };
+    // }, [selectedChallenge, isSubmitting]);
+
+    // Track window focus/blur
+    useEffect(() => {
+        const handleFocusChange = () => {
+            if (selectedChallenge) {
+                setTabSwitchCount(prev => prev + 1);
+                console.log("User switched window focus");
+            }
+        };
+
+        window.addEventListener('blur', handleFocusChange);
+
+        return () => {
+            window.removeEventListener('blur', handleFocusChange);
+        };
+    }, [selectedChallenge]);
+
+    // New helper function to mark challenges as attempted
+    const markChallengeAsAttempted = async (challengeId) => {
+        if (teamData && !teamData.attemptedChallenges?.includes(challengeId)) {
+            try {
+                // Update local state
+                setAttemptedChallenges(prev => [...prev, challengeId]);
+
+                // Update in database
+                const teamRef = doc(db, "teams", teamData.id);
+                await updateDoc(teamRef, {
+                    attemptedChallenges: arrayUnion(challengeId),
+                    [`challengeAttempts.${challengeId}`]: {
+                        tabSwitches: tabSwitchCount,
+                        attemptedAt: new Date()
+                    }
+                });
+
+                console.log("Challenge marked as attempted:", challengeId);
+            } catch (error) {
+                console.error("Error marking challenge as attempted:", error);
+            }
+        }
+    };
+
+    // // Force fullscreen when a challenge is selected
+    // useEffect(() => {
+    //     if (selectedChallenge && !isFullscreen) {
+    //         // Short timeout to ensure DOM is ready
+    //         const timeoutId = setTimeout(() => {
+    //             enterFullscreen();
+    //         }, 300);
+    //         return () => clearTimeout(timeoutId);
+    //     }
+    // }, [selectedChallenge, isFullscreen]);
+
+    // Periodically check if we're in fullscreen mode and attempt to re-enter if not
+    // useEffect(() => {
+    //     if (selectedChallenge) {
+    //         const intervalId = setInterval(() => {
+    //             const isCurrentlyFullscreen = document.fullscreenElement ||
+    //                 document.webkitFullscreenElement ||
+    //                 document.mozFullScreenElement ||
+    //                 document.msFullscreenElement;
+
+    //             if (!isCurrentlyFullscreen) {
+    //                 enterFullscreen();
+    //             }
+    //         }, 2000); // Check every 2 seconds
+
+    //         return () => clearInterval(intervalId);
+    //     }
+    // }, [selectedChallenge]);
+
+    // Save attempted challenges to team data in Firebase
+    useEffect(() => {
+        const saveAttemptedChallenges = async () => {
+            if (user && teamData && teamData.id && attemptedChallenges.length > 0) {
+                try {
+                    const teamRef = doc(db, "teams", teamData.id);
+                    await updateDoc(teamRef, {
+                        attemptedChallenges: arrayUnion(...attemptedChallenges)
+                    });
+                } catch (error) {
+                    console.error("Error saving attempted challenges:", error);
+                }
+            }
+        };
+
+        saveAttemptedChallenges();
+    }, [attemptedChallenges, user, teamData]);
+
+    // Load attempted challenges when team data is loaded
+    useEffect(() => {
+        if (teamData && teamData.attemptedChallenges) {
+            setAttemptedChallenges(teamData.attemptedChallenges);
+        }
+    }, [teamData]);
 
     // Check user auth state
     useEffect(() => {
@@ -46,6 +543,7 @@ function Challenges() {
                 });
 
                 setTimeout(() => {
+                    exitFullscreen(); // Exit fullscreen before redirecting
                     navigate('/home');
                 }, 5000); // 5 second delay before redirecting
             }
@@ -73,6 +571,13 @@ function Challenges() {
                             solvedChallenges: []
                         });
                     }
+
+                    // Initialize attemptedChallenges if it doesn't exist
+                    if (!team.attemptedChallenges) {
+                        await updateDoc(doc(db, "teams", team.id), {
+                            attemptedChallenges: []
+                        });
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching team data:", error);
@@ -91,9 +596,9 @@ function Challenges() {
                 console.log("Settings document exists:", settingsDoc.exists());
                 if (settingsDoc.exists()) {
                     const data = settingsDoc.data();
-                    console.log("Settings data:", data); // Log all settings data
+                    console.log("Settings data:", data);
                     setEventStatus(data.eventStatus);
-                    
+
                     // If event has ended, redirect to home
                     if (data.eventStatus === 'ended') {
                         navigate('/home');
@@ -105,7 +610,7 @@ function Challenges() {
                 console.error("Error checking event status:", error);
             }
         };
-        
+
         checkEventStatus();
     }, [navigate]);
 
@@ -158,10 +663,22 @@ function Challenges() {
                     // Find the challenge in the sorted list
                     const challengeIndex = challengesList.findIndex(c => c.id === challengeId);
 
+                    // Check if challenge has already been attempted but not solved
+                    const isAttempted = teamData?.attemptedChallenges?.includes(challengeId) &&
+                        !teamData?.solvedChallenges?.includes(challengeId);
+
+                    if (isAttempted) {
+                        // Redirect to challenges page without ID if already attempted
+                        navigate('/challenges');
+                        return;
+                    }
+
                     // If challenge exists and is accessible (based on solved challenges)
                     if (challengeIndex !== -1 && isChallengeAccessible(challengeIndex, teamData?.solvedChallenges, challengesList)) {
                         setSelectedChallenge(challengesList[challengeIndex]);
                         setCurrentChallengeIndex(challengeIndex);
+                        // Auto-enter fullscreen
+                        setTimeout(() => enterFullscreen(), 500);
                     } else {
                         // Redirect to challenges page without ID to show current challenge
                         navigate('/challenges');
@@ -170,8 +687,34 @@ function Challenges() {
                     // If no specific challenge is requested, set the current accessible challenge
                     // This will be either the first unsolved challenge or the first challenge
                     const accessibleIndex = findFirstAccessibleChallengeIndex(teamData?.solvedChallenges, challengesList);
-                    setCurrentChallengeIndex(accessibleIndex);
-                    setSelectedChallenge(challengesList[accessibleIndex]);
+
+                    // Check if this challenge has been attempted
+                    const nextChallenge = challengesList[accessibleIndex];
+                    const isAttempted = nextChallenge && teamData?.attemptedChallenges?.includes(nextChallenge.id) &&
+                        !teamData?.solvedChallenges?.includes(nextChallenge.id);
+
+                    if (!isAttempted) {
+                        setCurrentChallengeIndex(accessibleIndex);
+                        setSelectedChallenge(challengesList[accessibleIndex]);
+                    } else {
+                        // Find next unattempted challenge
+                        let foundUnattempted = false;
+                        for (let i = 0; i < challengesList.length; i++) {
+                            if (isChallengeAccessible(i, teamData?.solvedChallenges, challengesList) &&
+                                !teamData?.attemptedChallenges?.includes(challengesList[i].id) &&
+                                !teamData?.solvedChallenges?.includes(challengesList[i].id)) {
+                                setCurrentChallengeIndex(i);
+                                setSelectedChallenge(challengesList[i]);
+                                foundUnattempted = true;
+                                break;
+                            }
+                        }
+
+                        if (!foundUnattempted) {
+                            // No unattempted challenges available
+                            setSelectedChallenge(null);
+                        }
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching challenges:", error);
@@ -288,8 +831,43 @@ function Challenges() {
         checkFinalistStatus();
     }, [teamData, challenges, navigate]);
 
+    // Modified submit function to include tab switch information
+
+    // Modified challenge navigation function to handle attempted challenges
+    const navigateToChallenge = (index) => {
+        if (index >= 0 && index < challenges.length) {
+            const challenge = challenges[index];
+
+            // Check if this challenge has already been attempted but not solved
+            const isAttempted = teamData?.attemptedChallenges?.includes(challenge.id) &&
+                !teamData?.solvedChallenges?.includes(challenge.id);
+
+            if (isAttempted) {
+                alert("You've already attempted this challenge and cannot access it again.");
+                return;
+            }
+
+            // Check accessibility based on previous challenges
+            if (isChallengeAccessible(index, teamData?.solvedChallenges, challenges)) {
+                // Mark this challenge as attempted when navigating to it
+                if (!teamData?.solvedChallenges?.includes(challenge.id)) {
+                    setAttemptedChallenges(prev => [...prev, challenge.id]);
+                }
+
+                setSelectedChallenge(challenge);
+                setCurrentChallengeIndex(index);
+                navigate(`/challenges/${challenge.id}`);
+                setTabSwitchCount(0); // Reset tab switch count for new challenge
+
+                // Enter fullscreen mode
+                enterFullscreen();
+            }
+        }
+    };
+
+    // Improved submit function with proper event handling
     const handleSubmitFlag = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         if (!selectedChallenge || !flagSubmission.trim()) return;
 
         // Check if event has ended
@@ -301,53 +879,25 @@ function Challenges() {
             return;
         }
 
+        // Mark this challenge as attempted
+        markChallengeAsAttempted(selectedChallenge.id);
+
         setSubmitLoading(true);
         setSubmitResult(null);
 
         try {
-            // Fetch the current settings to get the finalist count
-            const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
-            if (settingsDoc.exists()) {
-                const settingsData = settingsDoc.data();
-                const finalistCount = settingsData.finalistCount || 1;
-
-                // Check how many teams have completed all challenges
-                const teamsRef = collection(db, "teams");
-                const teamsSnapshot = await getDocs(teamsRef);
-                const completedTeams = teamsSnapshot.docs
-                    .filter(doc => {
-                        const team = doc.data();
-                        return team.solvedChallenges?.length >= challenges.length; // All challenges solved
-                    })
-                    .map(doc => ({ id: doc.id, ...doc.data() }));
-
-                // Check if enough teams have already finished and this team is not among them
-                if (completedTeams.length >= finalistCount &&
-                    !completedTeams.some(team => team.id === teamData.id)) {
-                    setSubmitResult({
-                        success: false,
-                        message: "This challenge has been completed by other teams. The competition is now closed."
-                    });
-                    setSubmitLoading(false);
-
-                    // Redirect to home page after a delay
-                    setTimeout(() => {
-                        navigate('/home');
-                    }, 6000);
-                    return;
-                }
-            }
-
-            // Verify the flag against the stored hash
-            if (!selectedChallenge.flagHash) {
-                setSubmitResult({
-                    success: false,
-                    message: "This challenge doesn't have a valid flag configured. Please contact an administrator."
+            // Add tab switch count to the database when submitting a flag
+            if (teamData) {
+                const teamRef = doc(db, "teams", teamData.id);
+                await updateDoc(teamRef, {
+                    [`challengeAttempts.${selectedChallenge.id}`]: {
+                        tabSwitches: tabSwitchCount,
+                        submittedAt: new Date()
+                    }
                 });
-                setSubmitLoading(false);
-                return;
             }
 
+            // Flag verification code
             const flagMatches = await bcrypt.compare(flagSubmission.trim(), selectedChallenge.flagHash);
 
             if (flagMatches) {
@@ -363,7 +913,8 @@ function Challenges() {
                             await updateDoc(teamRef, {
                                 solvedChallenges: arrayUnion(selectedChallenge.id),
                                 score: (teamData.score || 0) + selectedChallenge.points,
-                                completedAt: solvedChallenges.length + 1 === challenges.length ? new Date() : null // Set completion time if all challenges are solved
+                                completedAt: solvedChallenges.length + 1 === challenges.length ? new Date() : null,
+                                [`challengeAttempts.${selectedChallenge.id}.success`]: true
                             });
 
                             // Update local team data
@@ -397,6 +948,7 @@ function Challenges() {
 
                         // Redirect to home after delay
                         setTimeout(() => {
+                            exitFullscreen(); // Only exit fullscreen before redirecting on completion
                             navigate('/home');
                         }, 5000);
                     } else {
@@ -411,6 +963,15 @@ function Challenges() {
                 }
             } else {
                 // Flag is incorrect
+                if (teamData) {
+                    await updateDoc(doc(db, "teams", teamData.id), {
+                        [`challengeAttempts.${selectedChallenge.id}.incorrectAttempts`]: arrayUnion({
+                            flag: flagSubmission.trim(),
+                            timestamp: new Date()
+                        })
+                    });
+                }
+
                 setSubmitResult({
                     success: false,
                     message: "Incorrect flag. Try again."
@@ -424,15 +985,6 @@ function Challenges() {
             });
         } finally {
             setSubmitLoading(false);
-        }
-    };
-
-    // Handle navigation to different challenges
-    const navigateToChallenge = (index) => {
-        if (index >= 0 && index < challenges.length && isChallengeAccessible(index, teamData?.solvedChallenges, challenges)) {
-            setSelectedChallenge(challenges[index]);
-            setCurrentChallengeIndex(index);
-            navigate(`/challenges/${challenges[index].id}`);
         }
     };
 
@@ -460,6 +1012,18 @@ function Challenges() {
                             </svg>
                             CID CTF Platform
                         </Link>
+
+                        <div className="flex items-center space-x-4">
+                            {/* Score Counter */}
+                            {teamData && (
+                                <div className="flex items-center text-white bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-lg border border-white/30">
+                                    <span className="mr-2 font-medium">Score:</span>
+                                    <span className="px-3 py-0.5 bg-white text-indigo-800 text-sm font-bold rounded-full">
+                                        {teamData.score || 0}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </header>
 
@@ -543,9 +1107,108 @@ function Challenges() {
         );
     }
 
+    const reenterFullscreenWithoutReset = () => {
+        if (fullscreenRef.current) {
+            try {
+                if (document.fullscreenElement) {
+                    // Already in fullscreen, no need to request again
+                    setIsFullscreen(true);
+                    return;
+                }
+
+                if (fullscreenRef.current.requestFullscreen) {
+                    fullscreenRef.current.requestFullscreen();
+                } else if (fullscreenRef.current.mozRequestFullScreen) {
+                    fullscreenRef.current.mozRequestFullScreen();
+                } else if (fullscreenRef.current.webkitRequestFullscreen) {
+                    fullscreenRef.current.webkitRequestFullscreen();
+                } else if (fullscreenRef.current.msRequestFullscreen) {
+                    fullscreenRef.current.msRequestFullscreen();
+                }
+
+                setIsFullscreen(true);
+
+                // Ensure content is scrollable in fullscreen mode
+                if (fullscreenRef.current) {
+                    fullscreenRef.current.style.overflow = "auto";
+                    fullscreenRef.current.style.height = "100vh";
+                }
+
+                // Don't reset tab switch counter here!
+            } catch (error) {
+                console.error("Error re-entering fullscreen:", error);
+            }
+        }
+    };
+
     // Display the current challenge
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+        <div ref={fullscreenRef}
+            className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100"
+            style={{
+                overflow: 'auto',  // Ensure content is scrollable
+                height: '100vh',   // Take full viewport height
+                position: 'relative' // Enable proper positioning
+            }}
+        >
+
+            {/* Fullscreen exit button - only show when in fullscreen */}
+            {selectedChallenge && isFullscreen && (
+                <div className="fixed top-5 right-5 z-50">
+                    <button
+                        onClick={showExitConfirmation}
+                        className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-lg flex items-center"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                        Exit Challenge
+                    </button>
+                </div>
+            )}
+
+            {/* Show fullscreen dialog if needed */}
+            {showFullscreenDialog && <FullscreenDialog />}
+
+            {/* Show exit dialog - ensure this renders on top of everything */}
+            {showExitDialog && (
+                <ExitFullscreenDialog
+                    onStay={() => {
+                        console.log("User chose to stay in challenge");
+                        setShowExitDialog(false);
+                        reenterFullscreenWithoutReset(); // Use the new function instead of enterFullscreen()
+                    }}
+                    onExit={() => {
+                        console.log("User chose to exit challenge");
+                        // Mark challenge as attempted
+                        markChallengeAsAttempted(selectedChallenge.id);
+
+                        // Close dialog first
+                        setShowExitDialog(false);
+
+                        // Exit fullscreen and navigate to HOME page
+                        setTimeout(() => {
+                            setIsSubmitting(true);
+                            exitFullscreen();
+                            navigate('/home'); // Redirect to home page
+                        }, 100);
+                    }}
+                />
+            )}
+
+            {selectedChallenge && !isFullscreen && (
+                <div className="fixed bottom-5 right-5 z-50">
+                    <button
+                        onClick={enterFullscreen}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full shadow-lg flex items-center"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z" clipRule="evenodd" />
+                        </svg>
+                        Enter Fullscreen Mode
+                    </button>
+                </div>
+            )}
             {/* Header */}
             <header className="bg-gradient-to-r from-indigo-600 to-blue-500 shadow-md">
                 <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
@@ -556,29 +1219,69 @@ function Challenges() {
                         CID CTF Platform
                     </Link>
 
-                    {teamData && (
-                        <div className="flex items-center text-white bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-lg border border-white/30">
-                            <span className="mr-2 font-medium">Score:</span>
-                            <span className="px-3 py-0.5 bg-white text-indigo-800 text-sm font-bold rounded-full">
-                                {teamData.score || 0}
-                            </span>
-                        </div>
-                    )}
+                    <div className="flex items-center space-x-4">
+                        {/* Tab Switch Counter - Always show when a challenge is selected */}
+                        {selectedChallenge && (
+                            <div className="flex items-center text-white bg-red-500/80 backdrop-blur-sm px-4 py-1.5 rounded-lg border border-red-400/30">
+                                <span className="mr-2 font-medium">Tab Switches:</span>
+                                <span className="px-3 py-0.5 bg-white text-red-800 text-sm font-bold rounded-full">
+                                    {tabSwitchCount}
+                                </span>
+                            </div>
+                        )}
+
+                        {/* Score Counter */}
+                        {teamData && (
+                            <div className="flex items-center text-white bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-lg border border-white/30">
+                                <span className="mr-2 font-medium">Score:</span>
+                                <span className="px-3 py-0.5 bg-white text-indigo-800 text-sm font-bold rounded-full">
+                                    {teamData.score || 0}
+                                </span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </header>
 
             <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
                 <div className="mb-6 flex items-center justify-between">
-                    <h1 className="text-3xl font-bold text-gray-900">Challenge {currentChallengeIndex + 1}</h1>
+                    <h1 className="text-3xl font-bold text-gray-900">
+                        Challenge {currentChallengeIndex + 1}
+                        {selectedChallenge && (
+                            <span className="ml-2 text-sm text-red-500">
+                                (Fullscreen Mode - Tab switches are being counted)
+                            </span>
+                        )}
+                    </h1>
                     <div className="flex space-x-2">
-                        <Link
-                            to="/home"
-                            className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            Back to Home
-                        </Link>
+                        {!selectedChallenge && (
+                            <Link
+                                to="/home"
+                                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            >
+                                Back to Home
+                            </Link>
+                        )}
                     </div>
                 </div>
+
+                {/* Security Warning */}
+                {selectedChallenge && (
+                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-6">
+                        <div className="flex">
+                            <div className="flex-shrink-0">
+                                <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div className="ml-3">
+                                <p className="text-sm text-yellow-700">
+                                    <strong>Warning:</strong> You can only attempt this challenge once. If you exit fullscreen mode, switch tabs, or navigate away, it will count against you.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Progress Indicator */}
                 <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
@@ -753,25 +1456,36 @@ function Challenges() {
                             const isSolved = teamData?.solvedChallenges?.includes(challenge.id);
                             const isAccessible = isChallengeAccessible(index, teamData?.solvedChallenges, challenges);
                             const isCurrent = currentChallengeIndex === index;
+                            const isAttempted = teamData?.attemptedChallenges?.includes(challenge.id) && !isSolved;
 
                             return (
                                 <button
                                     key={challenge.id}
-                                    onClick={() => isAccessible ? navigateToChallenge(index) : null}
-                                    disabled={!isAccessible}
+                                    onClick={() => isAccessible && !isAttempted ? navigateToChallenge(index) : null}
+                                    disabled={!isAccessible || isAttempted}
                                     className={`w-10 h-10 flex items-center justify-center rounded-full font-medium text-sm
                                         ${isCurrent ? 'ring-2 ring-offset-2 ring-indigo-500 ' : ''}
                                         ${isSolved
                                             ? 'bg-green-100 text-green-800 border border-green-300'
-                                            : isAccessible
-                                                ? 'bg-indigo-100 text-indigo-800 border border-indigo-300 hover:bg-indigo-200'
-                                                : 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
+                                            : isAttempted
+                                                ? 'bg-red-100 text-red-800 border border-red-300 cursor-not-allowed'
+                                                : isAccessible
+                                                    ? 'bg-indigo-100 text-indigo-800 border border-indigo-300 hover:bg-indigo-200'
+                                                    : 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
                                         }`}
-                                    title={isAccessible ? challenge.title : "Locked Challenge"}
+                                    title={isAccessible
+                                        ? isAttempted
+                                            ? "Already attempted"
+                                            : challenge.title
+                                        : "Locked Challenge"}
                                 >
                                     {isSolved ? (
                                         <svg className="h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                    ) : isAttempted ? (
+                                        <svg className="h-4 w-4 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                                         </svg>
                                     ) : isAccessible ? (
                                         index + 1

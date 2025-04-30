@@ -117,23 +117,66 @@ function Login() {
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState('Place your finger on the scanner');
   const navigate = useNavigate();
+  const progressInterval = useRef(null);
 
-  const handleGoogleLogin = async () => {
+  const startGoogleAuth = async () => {
+    if (scanning) return;
+    
     setScanning(true);
     setProgress(0);
     setMessage('Scanning...');
     setError(null);
-    
+
+    return new Promise((resolve) => {
+      progressInterval.current = setInterval(() => {
+        setProgress(prev => {
+          const newProgress = prev + 5;
+          
+          if (newProgress === 35) {
+            setMessage('Analyzing fingerprint pattern...');
+          } else if (newProgress === 65) {
+            setMessage('Preparing Google authentication...');
+          } else if (newProgress === 90) {
+            setMessage('Initializing secure connection...');
+          } else if (newProgress >= 100) {
+            clearInterval(progressInterval.current);
+            resolve();
+            return 100;
+          }
+          
+          return newProgress;
+        });
+      }, 100);
+    });
+  };
+
+  const handleGoogleLogin = async () => {
     try {
+
+      await startGoogleAuth();
+      
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      // Redirect to home page after successful login
       navigate('/home');
     } catch (error) {
       console.error("Error signing in with Google: ", error);
       setError("Failed to sign in. Please try again.");
-    } 
+    } finally {
+      setScanning(false);
+      setProgress(0);
+      setMessage('Place your finger on the scanner');
+    }
   };
+
+  useEffect(() => {
+    return () => {
+      if (progressInterval.current) {
+        clearInterval(progressInterval.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white flex flex-col items-center justify-center p-4 relative">
@@ -178,7 +221,6 @@ function Login() {
           <div className="flex flex-col items-center p-4">
             <div 
               onClick={handleGoogleLogin}
-
               className={`
                 w-40 h-40 rounded-full flex items-center justify-center cursor-pointer 
                 relative overflow-hidden transition-all duration-300
@@ -211,6 +253,10 @@ function Login() {
             <p className={`mt-4 text-center ${scanning ? 'text-[#05df72]' : 'text-gray-400'}`}>
               {message}
             </p>
+
+            {error && (
+              <p className="mt-4 text-red-500 text-sm">{error}</p>
+            )}
           </div>
           
           <div className="mt-8 text-center text-xs text-gray-500">
@@ -240,4 +286,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Login; 

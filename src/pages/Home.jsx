@@ -796,7 +796,7 @@ function Home() {
                         </div>
                         <h3 className="text-lg font-semibold text-gray-900 mb-3">Contact Support</h3>
                         <p className="text-sm text-gray-600 leading-relaxed">
-                            If you have any questions or need assistance, please contact our support team at <a href="mailto:support@cidctf.example.com" className="text-indigo-600 hover:text-indigo-800 font-medium">support@cidctf.example.com</a>.
+                            If you have any questions or need assistance, please contact our support team at <a href="mailto:opensourcechandigarh@chitkara.edu.in" className="text-indigo-600 hover:text-indigo-800 font-medium">opensourcechandigarh@chitkara.edu.in</a>.
                         </p>
                     </div>
                 </div>

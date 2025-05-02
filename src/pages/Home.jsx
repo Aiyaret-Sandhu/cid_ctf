@@ -326,37 +326,38 @@ function Home() {
         );
     }
 
+    // Only UI changes - all functionality remains the same
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-gray-100">
-            {/* Dark-themed Cybersecurity Header */}
-            <header className="bg-gradient-to-r from-blue-900 to-indigo-900 border-b border-blue-700 shadow-lg">
+        <div className="min-h-screen bg-black text-gray-100">
+            {/* Header with yellow/black theme */}
+            <header className="bg-black border-b border-yellow-500 shadow-lg">
                 <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center">
-                        <Link to="/" className="flex items-center text-blue-100">
-                            <div className="p-2 bg-blue-800 rounded-lg mr-3 shadow-inner">
+                        <Link to="/" className="flex items-center text-yellow-400">
+                            <div className="p-2 bg-yellow-900 rounded-lg mr-3 shadow-inner">
                                 <svg className="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                 </svg>
                             </div>
                             <div>
                                 <span className="text-2xl font-black tracking-tight">CID CTF</span>
-                                <div className="text-xs font-mono text-blue-300 -mt-1">Criminal Investigation Division</div>
+                                <div className="text-xs font-mono text-yellow-500 -mt-1">Criminal Investigation Division</div>
                             </div>
                         </Link>
                         <div className="flex items-center">
                             {user ? (
                                 <div className="flex items-center">
                                     {teamData && (
-                                        <div className="flex items-center bg-blue-800/50 backdrop-blur-sm px-4 py-2 rounded-lg mr-4 border border-blue-700 shadow-md">
-                                            <div className="w-8 h-8 bg-blue-700 rounded-full flex items-center justify-center mr-3">
-                                                <svg className="w-4 h-4 text-blue-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <div className="flex items-center bg-yellow-900/30 backdrop-blur-sm px-4 py-2 rounded-lg mr-4 border border-yellow-700 shadow-md">
+                                            <div className="w-8 h-8 bg-yellow-900 rounded-full flex items-center justify-center mr-3">
+                                                <svg className="w-4 h-4 text-yellow-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                                 </svg>
                                             </div>
                                             <div>
-                                                <span className="text-sm font-medium text-blue-100">{teamData.name}</span>
+                                                <span className="text-sm font-medium text-yellow-100">{teamData.name}</span>
                                                 {teamData.score > 0 && (
-                                                    <div className="text-xs font-mono text-blue-300 flex items-center">
+                                                    <div className="text-xs font-mono text-yellow-300 flex items-center">
                                                         <span className="text-yellow-400 mr-1">●</span>
                                                         {teamData.score} points
                                                     </div>
@@ -365,13 +366,13 @@ function Home() {
                                         </div>
                                     )}
 
-                                    <div className="text-sm text-blue-200 mr-4 hidden sm:block font-mono border-l border-blue-700 pl-4">
+                                    <div className="text-sm text-yellow-200 mr-4 hidden sm:block font-mono border-l border-yellow-700 pl-4">
                                         <span className="opacity-70">AGENT:</span> {user.email}
                                     </div>
 
                                     <Link
                                         to="/leaderboard"
-                                        className="inline-flex items-center px-3 py-2 border border-blue-700 text-sm font-medium rounded-md text-white bg-blue-800 hover:bg-blue-700 mr-2 transition-all shadow-lg hover:shadow-blue-700/20"
+                                        className="inline-flex items-center px-3 py-2 border border-yellow-700 text-sm font-medium rounded-md text-black bg-yellow-500 hover:bg-yellow-400 mr-2 transition-all shadow-lg hover:shadow-yellow-700/20"
                                     >
                                         <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -393,13 +394,13 @@ function Home() {
                                 <div className="flex space-x-2">
                                     <Link
                                         to="/login"
-                                        className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-blue-100 bg-blue-800 hover:bg-blue-700 transition-all shadow-lg"
+                                        className="inline-flex items-center px-4 py-2 border border-yellow-600 text-sm font-medium rounded-md text-black bg-yellow-500 hover:bg-yellow-400 transition-all shadow-lg"
                                     >
                                         Sign In
                                     </Link>
                                     <Link
                                         to="/register"
-                                        className="inline-flex items-center px-4 py-2 border border-blue-600/30 text-sm font-medium rounded-md text-white bg-blue-700/50 hover:bg-blue-700/70 transition-all shadow-lg backdrop-blur-sm"
+                                        className="inline-flex items-center px-4 py-2 border border-yellow-600/30 text-sm font-medium rounded-md text-yellow-100 bg-yellow-700/50 hover:bg-yellow-700/70 transition-all shadow-lg backdrop-blur-sm"
                                     >
                                         Register
                                     </Link>
@@ -411,7 +412,7 @@ function Home() {
             </header>
 
             <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-                {/* Status Alerts - Updated styling for dark theme */}
+                {/* Status Alerts - Yellow/Black theme */}
                 {eventStatus === 'not-started' && (
                     <div className="bg-yellow-900/30 border-l-4 border-yellow-500 p-4 mb-8 rounded-r-lg shadow-lg backdrop-blur-sm">
                         <div className="flex">
@@ -430,14 +431,14 @@ function Home() {
                 )}
 
                 {eventStatus === 'active' && (
-                    <div className="bg-green-900/30 border-l-4 border-green-500 p-4 mb-8 rounded-r-lg shadow-lg backdrop-blur-sm">
+                    <div className="bg-yellow-900/30 border-l-4 border-yellow-500 p-4 mb-8 rounded-r-lg shadow-lg backdrop-blur-sm">
                         <div className="flex">
                             <div className="flex-shrink-0">
-                                <div className="h-5 w-5 text-green-400 animate-pulse">●</div>
+                                <div className="h-5 w-5 text-yellow-400 animate-pulse">●</div>
                             </div>
                             <div className="ml-3">
-                                <p className="text-sm text-green-300 font-mono">
-                                    <span className="font-semibold">STATUS: ACTIVE</span> Operation in progress. 
+                                <p className="text-sm text-yellow-300 font-mono">
+                                    <span className="font-semibold">STATUS: ACTIVE</span> Operation in progress.
                                     {settings?.eventEndTime && (
                                         <span className="font-medium"> Termination at {settings.eventEndTime.toDate().toLocaleDateString()} - {settings.eventEndTime.toDate().toLocaleTimeString()}</span>
                                     )}
@@ -448,15 +449,15 @@ function Home() {
                 )}
 
                 {eventStatus === 'ended' && (
-                    <div className="bg-red-900/30 border-l-4 border-red-500 p-4 mb-8 rounded-r-lg shadow-lg backdrop-blur-sm">
+                    <div className="bg-yellow-900/30 border-l-4 border-yellow-500 p-4 mb-8 rounded-r-lg shadow-lg backdrop-blur-sm">
                         <div className="flex">
                             <div className="flex-shrink-0">
-                                <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <svg className="h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                                 </svg>
                             </div>
                             <div className="ml-3">
-                                <p className="text-sm text-red-300 font-mono">
+                                <p className="text-sm text-yellow-300 font-mono">
                                     <span className="font-semibold">MISSION COMPLETE:</span> Operation terminated. Files sealed.
                                 </p>
                             </div>
@@ -464,33 +465,33 @@ function Home() {
                     </div>
                 )}
 
-                {/* Results after event ended - with updated cyber-themed styling */}
+                {/* Results after event ended - with updated yellow/black theme */}
                 {eventStatus === 'ended' && user && teamData && qualificationChecked && (
-                    <div className="bg-gray-800/70 border border-gray-700 rounded-xl p-6 mb-8 shadow-xl backdrop-blur-md">
-                        <h2 className="text-2xl font-black text-blue-300 mb-5 flex items-center font-mono">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="bg-gray-900/70 border border-yellow-700/50 rounded-xl p-6 mb-8 shadow-xl backdrop-blur-md">
+                        <h2 className="text-2xl font-black text-yellow-300 mb-5 flex items-center font-mono">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             MISSION REPORT
                         </h2>
 
                         {qualified ? (
-                            <div className="bg-gradient-to-br from-green-900/40 to-blue-900/40 border border-green-700/50 rounded-xl p-6 shadow-inner backdrop-blur-sm">
-                                <h3 className="text-xl font-semibold text-green-300 mb-3 flex items-center font-mono">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                            <div className="bg-gradient-to-br from-yellow-900/40 to-yellow-800/40 border border-yellow-700/50 rounded-xl p-6 shadow-inner backdrop-blur-sm">
+                                <h3 className="text-xl font-semibold text-yellow-300 mb-3 flex items-center font-mono">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
                                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                     </svg>
                                     ACCESS GRANTED: {teamData.name}
                                 </h3>
-                                <p className="text-green-300 mb-4 pl-8 font-mono">
-                                    Your credentials have been verified with performance rating: <span className="font-bold bg-green-900/50 px-2 py-0.5 rounded">Level {teamData.score || 0}</span>
+                                <p className="text-yellow-300 mb-4 pl-8 font-mono">
+                                    Your credentials have been verified with performance rating: <span className="font-bold bg-yellow-900/50 px-2 py-0.5 rounded">Level {teamData.score || 0}</span>
                                 </p>
-                                <div className="border-t border-green-700/30 pt-4 mt-4">
-                                    <h4 className="font-medium text-green-300 mb-2 font-mono">NEXT OPERATION BRIEFING:</h4>
-                                    <p className="text-green-300 font-mono">{settings?.nextRoundInfo}</p>
+                                <div className="border-t border-yellow-700/30 pt-4 mt-4">
+                                    <h4 className="font-medium text-yellow-300 mb-2 font-mono">NEXT OPERATION BRIEFING:</h4>
+                                    <p className="text-yellow-300 font-mono">{settings?.nextRoundInfo}</p>
                                     {settings?.venue && (
-                                        <p className="text-green-300 mt-2 flex items-center font-mono">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <p className="text-yellow-300 mt-2 flex items-center font-mono">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                             </svg>
@@ -500,8 +501,8 @@ function Home() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="bg-gradient-to-br from-gray-800/40 to-gray-900/40 border border-gray-700 rounded-xl p-6 shadow-inner">
-                                <h3 className="text-xl font-medium text-gray-300 mb-3 font-mono">OPERATION STATUS: COMPLETE</h3>
+                            <div className="bg-gradient-to-br from-gray-800/40 to-gray-900/40 border border-yellow-700/30 rounded-xl p-6 shadow-inner">
+                                <h3 className="text-xl font-medium text-yellow-300 mb-3 font-mono">OPERATION STATUS: COMPLETE</h3>
                                 <p className="text-gray-400 mb-4 font-mono">
                                     {settings?.eliminationMessage || "Mission parameters not satisfied for next phase access."}
                                 </p>
@@ -509,7 +510,7 @@ function Home() {
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                     </svg>
-                                    PERFORMANCE SCORE: <span className="font-semibold text-blue-300">{teamData.score || 0}</span>
+                                    PERFORMANCE SCORE: <span className="font-semibold text-yellow-300">{teamData.score || 0}</span>
                                 </p>
                             </div>
                         )}
@@ -521,60 +522,60 @@ function Home() {
                     {/* Dashboard Side Column for Key Stats */}
                     <div className="lg:col-span-1">
                         {user && eventStatus === 'active' && teamData && (
-                            <div className="bg-gray-800/70 border border-gray-700 rounded-xl p-5 shadow-xl mb-6">
-                                <h3 className="text-lg font-bold text-blue-300 mb-4 flex items-center border-b border-gray-700 pb-3 font-mono">
+                            <div className="bg-gray-900 border border-yellow-700/30 rounded-xl p-5 shadow-xl mb-6">
+                                <h3 className="text-lg font-bold text-yellow-300 mb-4 flex items-center border-b border-yellow-700/30 pb-3 font-mono">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
                                     </svg>
                                     INTEL REPORT
                                 </h3>
-                                
+
                                 <div className="space-y-4">
                                     {/* Agent Status */}
-                                    <div className="bg-gray-900/50 rounded-lg p-3 border border-gray-700">
-                                        <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Agent Status</div>
+                                    <div className="bg-black rounded-lg p-3 border border-yellow-700/30">
+                                        <div className="text-xs text-yellow-500 uppercase tracking-wider mb-1">Agent Status</div>
                                         <div className="flex items-center">
-                                            <div className="h-2 w-2 rounded-full bg-green-500 mr-2 animate-pulse"></div>
-                                            <span className="text-green-300 font-medium">Active</span>
+                                            <div className="h-2 w-2 rounded-full bg-yellow-500 mr-2 animate-pulse"></div>
+                                            <span className="text-yellow-300 font-medium">Active</span>
                                         </div>
                                     </div>
-                                    
+
                                     {/* Team Performance */}
-                                    <div className="bg-gray-900/50 rounded-lg p-3 border border-gray-700">
-                                        <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Performance</div>
+                                    <div className="bg-black rounded-lg p-3 border border-yellow-700/30">
+                                        <div className="text-xs text-yellow-500 uppercase tracking-wider mb-1">Performance</div>
                                         <div className="flex items-center justify-between">
-                                            <span className="text-blue-300 font-medium">{calculateTeamProgress().percent}% Complete</span>
-                                            <span className="text-xs font-mono text-gray-400">{calculateTeamProgress().solved}/{calculateTeamProgress().total}</span>
+                                            <span className="text-yellow-300 font-medium">{calculateTeamProgress().percent}% Complete</span>
+                                            <span className="text-xs font-mono text-yellow-400">{calculateTeamProgress().solved}/{calculateTeamProgress().total}</span>
                                         </div>
-                                        <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                                        <div className="w-full bg-gray-800 rounded-full h-2 mt-2">
                                             <div
-                                                className="bg-blue-500 h-2 rounded-full"
+                                                className="bg-yellow-500 h-2 rounded-full"
                                                 style={{ width: `${calculateTeamProgress().percent}%` }}
                                             ></div>
                                         </div>
                                     </div>
-                                    
+
                                     {/* Score */}
-                                    <div className="bg-gray-900/50 rounded-lg p-3 border border-gray-700">
-                                        <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Score</div>
+                                    <div className="bg-black rounded-lg p-3 border border-yellow-700/30">
+                                        <div className="text-xs text-yellow-500 uppercase tracking-wider mb-1">Score</div>
                                         <div className="flex items-center">
                                             <span className="text-2xl font-bold text-yellow-400 font-mono">{teamData.score || 0}</span>
-                                            <span className="ml-2 text-xs text-gray-400">points</span>
+                                            <span className="ml-2 text-xs text-yellow-500">points</span>
                                         </div>
                                     </div>
-                                    
+
                                     {/* Challenges Completed */}
-                                    <div className="bg-gray-900/50 rounded-lg p-3 border border-gray-700">
-                                        <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Challenges Completed</div>
+                                    <div className="bg-black rounded-lg p-3 border border-yellow-700/30">
+                                        <div className="text-xs text-yellow-500 uppercase tracking-wider mb-1">Challenges Completed</div>
                                         <div className="flex items-center">
-                                            <span className="text-2xl font-bold text-blue-400 font-mono">{calculateTeamProgress().solved}</span>
-                                            <span className="ml-2 text-xs text-gray-400">of {calculateTeamProgress().total}</span>
+                                            <span className="text-2xl font-bold text-yellow-400 font-mono">{calculateTeamProgress().solved}</span>
+                                            <span className="ml-2 text-xs text-yellow-500">of {calculateTeamProgress().total}</span>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 {/* Quick Link for Challenges */}
-                                <Link to="/challenges" className="mt-4 flex items-center justify-center w-full py-3 bg-blue-900/60 hover:bg-blue-800/80 text-blue-200 rounded-lg border border-blue-700/50 transition-all shadow-md">
+                                <Link to="/challenges" className="mt-4 flex items-center justify-center w-full py-3 bg-yellow-900/60 hover:bg-yellow-800/80 text-yellow-200 rounded-lg border border-yellow-700/50 transition-all shadow-md">
                                     <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                     </svg>
@@ -583,28 +584,28 @@ function Home() {
                             </div>
                         )}
 
-                        {/* Info Cards - Redesigned for dark theme */}
+                        {/* Info Cards - Redesigned for yellow/black theme */}
                         <div className="space-y-4">
-                            <div className="bg-blue-900/30 p-5 rounded-xl border border-blue-800/50 shadow-xl hover:shadow-blue-900/10 transition-all duration-300">
-                                <div className="bg-blue-800/50 p-2 w-10 h-10 rounded-lg mb-4 flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div className="bg-black p-5 rounded-xl border border-yellow-700/30 shadow-xl hover:shadow-yellow-900/10 transition-all duration-300">
+                                <div className="bg-yellow-900/50 p-2 w-10 h-10 rounded-lg mb-4 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </div>
-                                <h3 className="text-lg font-semibold text-blue-200 mb-3">About CID CTF</h3>
-                                <p className="text-sm text-blue-100/70 leading-relaxed font-mono">
+                                <h3 className="text-lg font-semibold text-yellow-200 mb-3">About CID CTF</h3>
+                                <p className="text-sm text-yellow-100/70 leading-relaxed font-mono">
                                     The CID Capture The Flag competition is designed to test your cybersecurity skills in a challenging environment. Compete with other teams to solve security challenges.
                                 </p>
                             </div>
-                            
-                            <div className="bg-red-900/30 p-5 rounded-xl border border-red-800/50 shadow-xl hover:shadow-red-900/10 transition-all duration-300">
-                                <div className="bg-red-800/50 p-2 w-10 h-10 rounded-lg mb-4 flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+
+                            <div className="bg-black p-5 rounded-xl border border-yellow-700/30 shadow-xl hover:shadow-yellow-900/10 transition-all duration-300">
+                                <div className="bg-yellow-900/50 p-2 w-10 h-10 rounded-lg mb-4 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                     </svg>
                                 </div>
-                                <h3 className="text-lg font-semibold text-red-200 mb-3">Rules of Engagement</h3>
-                                <ul className="text-sm text-red-100/70 list-disc pl-5 space-y-2 font-mono">
+                                <h3 className="text-lg font-semibold text-yellow-200 mb-3">Rules of Engagement</h3>
+                                <ul className="text-sm text-yellow-100/70 list-disc pl-5 space-y-2 font-mono">
                                     <li>No attacking the infrastructure</li>
                                     <li>No sharing of flags or solutions</li>
                                     <li>Be respectful to other participants</li>
@@ -613,20 +614,20 @@ function Home() {
                             </div>
                         </div>
                     </div>
-                    
+
                     {/* Main Content Area - 2/3 width */}
                     <div className="lg:col-span-2">
                         {/* Welcome Panel */}
-                        <div className="bg-gray-800/70 border border-gray-700 rounded-xl p-6 shadow-xl mb-6 backdrop-blur-sm">
-                            <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300 mb-4 font-mono tracking-tight">
+                        <div className="bg-gray-900 border border-yellow-700/30 rounded-xl p-6 shadow-xl mb-6 backdrop-blur-sm">
+                            <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-300 mb-4 font-mono tracking-tight">
                                 {user ? 'WELCOME BACK, AGENT' : 'CID CYBERSECURITY DIVISION'}
                             </h2>
 
                             {!user ? (
                                 <div className="py-6">
                                     <div className="flex items-center mb-6">
-                                        <span className="h-3 w-3 bg-blue-500 animate-pulse rounded-full mr-2"></span>
-                                        <p className="text-gray-300 text-lg font-mono">
+                                        <span className="h-3 w-3 bg-yellow-500 animate-pulse rounded-full mr-2"></span>
+                                        <p className="text-yellow-300 text-lg font-mono">
                                             Authenticate to access classified CTF missions and test your security skills.
                                         </p>
                                     </div>
@@ -634,7 +635,7 @@ function Home() {
                                     <div className="flex space-x-4">
                                         <Link
                                             to="/login"
-                                            className="px-5 py-3 bg-blue-900 hover:bg-blue-800 text-blue-100 font-medium rounded-lg shadow-lg hover:shadow-blue-900/50 transition-all duration-300 flex items-center border border-blue-700"
+                                            className="px-5 py-3 bg-yellow-600 hover:bg-yellow-500 text-black font-medium rounded-lg shadow-lg hover:shadow-yellow-900/50 transition-all duration-300 flex items-center border border-yellow-700"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" />
@@ -643,7 +644,7 @@ function Home() {
                                         </Link>
                                         <Link
                                             to="/register"
-                                            className="px-5 py-3 bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium rounded-lg shadow-lg hover:shadow-gray-900/30 transition-all duration-300 flex items-center border border-gray-700"
+                                            className="px-5 py-3 bg-gray-800 hover:bg-gray-700 text-yellow-200 font-medium rounded-lg shadow-lg hover:shadow-gray-900/30 transition-all duration-300 flex items-center border border-yellow-700/30"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                                 <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
@@ -655,30 +656,30 @@ function Home() {
                             ) : eventStatus === 'active' ? (
                                 <div>
                                     <div className="flex items-center mb-6">
-                                        <span className="h-3 w-3 bg-green-500 animate-pulse rounded-full mr-2"></span>
-                                        <p className="text-gray-300 font-mono">
+                                        <span className="h-3 w-3 bg-yellow-500 animate-pulse rounded-full mr-2"></span>
+                                        <p className="text-yellow-300 font-mono">
                                             SECURE CONNECTION ESTABLISHED | SYSTEM ACCESS GRANTED
                                         </p>
                                     </div>
 
                                     {/* Challenge Link Card */}
                                     <div className="mb-6">
-                                        <Link to="/challenges" className="block p-5 bg-gradient-to-r from-blue-900/50 to-cyan-900/40 rounded-xl border border-blue-700/30 hover:border-blue-600/50 transition-all duration-300 hover:shadow-lg group">
+                                        <Link to="/challenges" className="block p-5 bg-gradient-to-r from-yellow-900/50 to-yellow-800/40 rounded-xl border border-yellow-700/30 hover:border-yellow-600/50 transition-all duration-300 hover:shadow-lg group">
                                             <div className="flex items-center">
-                                                <div className="p-3 bg-blue-800/50 rounded-lg mr-4 group-hover:bg-blue-700/70 transition-all">
-                                                    <svg className="h-7 w-7 text-blue-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <div className="p-3 bg-yellow-800/50 rounded-lg mr-4 group-hover:bg-yellow-700/70 transition-all">
+                                                    <svg className="h-7 w-7 text-yellow-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                                     </svg>
                                                 </div>
                                                 <div className="flex-1">
-                                                    <h3 className="text-xl font-semibold text-blue-300 mb-1 group-hover:text-cyan-300 transition-colors font-mono">
+                                                    <h3 className="text-xl font-semibold text-yellow-300 mb-1 group-hover:text-yellow-200 transition-colors font-mono">
                                                         ACCESS CHALLENGES
                                                     </h3>
-                                                    <p className="text-sm text-gray-400 font-mono">
+                                                    <p className="text-sm text-yellow-400/70 font-mono">
                                                         Decrypt, exploit, and solve missions to earn points and climb the ranks
                                                     </p>
                                                 </div>
-                                                <div className="text-blue-400 group-hover:translate-x-2 transition-transform duration-300">
+                                                <div className="text-yellow-400 group-hover:translate-x-2 transition-transform duration-300">
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                                     </svg>
@@ -689,15 +690,15 @@ function Home() {
 
                                     {/* All challenges completed message */}
                                     {allChallengesCompleted && (
-                                        <div className="bg-green-900/30 border border-green-700/50 rounded-lg p-4 mb-8 font-mono">
+                                        <div className="bg-yellow-900/30 border border-yellow-700/50 rounded-lg p-4 mb-8 font-mono">
                                             <div className="flex items-center">
                                                 <div className="flex-shrink-0">
-                                                    <svg className="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                    <svg className="h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                                     </svg>
                                                 </div>
                                                 <div className="ml-3">
-                                                    <p className="text-green-300">
+                                                    <p className="text-yellow-300">
                                                         <span className="font-semibold">MISSION COMPLETE:</span> All challenges successfully neutralized.
                                                     </p>
                                                 </div>
@@ -708,17 +709,15 @@ function Home() {
                                     {/* Leaderboard Section */}
                                     <div className="mt-8">
                                         <div className="flex justify-between items-center mb-4">
-                                            <h3 className="text-lg font-semibold text-blue-300 flex items-center font-mono">
+                                            <h3 className="text-lg font-semibold text-yellow-300 flex items-center font-mono">
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                                     <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
                                                 </svg>
                                                 FIELD OPERATIONS - TOP AGENTS
                                             </h3>
                                             <button
-                                                onClick={() => {
-                                                    fetchLeaderboard();
-                                                }}
-                                                className="flex items-center px-3 py-1.5 bg-blue-900/50 text-blue-300 hover:bg-blue-800/50 rounded-md transition-all text-sm font-medium border border-blue-700/50"
+                                                onClick={fetchLeaderboard}
+                                                className="flex items-center px-3 py-1.5 bg-yellow-900/50 text-yellow-300 hover:bg-yellow-800/50 rounded-md transition-all text-sm font-medium border border-yellow-700/50"
                                                 disabled={leaderboardLoading}
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 mr-1.5 ${leaderboardLoading ? 'animate-spin' : ''}`} viewBox="0 0 20 20" fill="currentColor">
@@ -729,43 +728,43 @@ function Home() {
                                         </div>
 
                                         {leaderboardLoading ? (
-                                            <div className="flex justify-center py-6 bg-gray-800/50 rounded-lg border border-gray-700">
-                                                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-400"></div>
+                                            <div className="flex justify-center py-6 bg-black border border-yellow-700/30 rounded-lg">
+                                                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-yellow-400"></div>
                                             </div>
                                         ) : (
-                                            <div className="overflow-x-auto bg-gray-800/50 rounded-lg border border-gray-700 shadow-lg">
-                                                <table className="min-w-full divide-y divide-gray-700 font-mono">
-                                                    <thead className="bg-gray-900/50">
+                                            <div className="overflow-x-auto bg-black rounded-lg border border-yellow-700/30 shadow-lg">
+                                                <table className="min-w-full divide-y divide-yellow-700/30 font-mono">
+                                                    <thead className="bg-yellow-900/30">
                                                         <tr>
-                                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-yellow-400 uppercase tracking-wider">
                                                                 Rank
                                                             </th>
-                                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-yellow-400 uppercase tracking-wider">
                                                                 Team
                                                             </th>
-                                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-yellow-400 uppercase tracking-wider">
                                                                 Status
                                                             </th>
-                                                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-yellow-400 uppercase tracking-wider">
                                                                 Score
                                                             </th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody className="divide-y divide-gray-700">
-                                                        {allTeams.length > 0 ? allTeams.map((team, index) => {
+                                                    <tbody className="divide-y divide-yellow-700/20">
+                                                        {allTeams.length > 0 ? allTeams.slice(0, 8).map((team, index) => {
                                                             // Special styling for current team
                                                             const isCurrentTeam = teamData && team.id === teamData.id;
 
                                                             // Different styling for top teams
                                                             let rowClass = "transition-colors";
-                                                            if (isCurrentTeam) rowClass += " bg-blue-900/30"; 
-                                                            else if (index === 0) rowClass += " bg-yellow-900/20"; // 1st
-                                                            else if (index === 1) rowClass += " bg-gray-700/20";   // 2nd
-                                                            else if (index === 2) rowClass += " bg-orange-900/20"; // 3rd
+                                                            if (isCurrentTeam) rowClass += " bg-yellow-900/30";
+                                                            else if (index === 0) rowClass += " bg-yellow-800/20"; // 1st
+                                                            else if (index === 1) rowClass += " bg-yellow-900/10";   // 2nd
+                                                            else if (index === 2) rowClass += " bg-yellow-900/5"; // 3rd
 
                                                             return (
                                                                 <tr key={team.id} className={rowClass}>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-300">
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-yellow-300">
                                                                         {index + 1}
                                                                         {index < 3 && (
                                                                             <span className="ml-1">
@@ -773,31 +772,31 @@ function Home() {
                                                                             </span>
                                                                         )}
                                                                     </td>
-                                                                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${isCurrentTeam ? "font-bold text-blue-300" : "text-gray-300"}`}>
+                                                                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${isCurrentTeam ? "font-bold text-yellow-300" : "text-yellow-200"}`}>
                                                                         {team.name}
                                                                         {isCurrentTeam && (
-                                                                            <span className="ml-2 text-xs bg-blue-900/50 text-blue-300 px-2 py-0.5 rounded border border-blue-700/50">YOU</span>
+                                                                            <span className="ml-2 text-xs bg-yellow-900/50 text-yellow-300 px-2 py-0.5 rounded border border-yellow-700/50">YOU</span>
                                                                         )}
                                                                     </td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                                                                        <div className="w-full bg-gray-700 rounded-full h-1.5">
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-yellow-200/70">
+                                                                        <div className="w-full bg-gray-800 rounded-full h-1.5">
                                                                             <div
-                                                                                className={`${isCurrentTeam ? "bg-blue-500" : "bg-gray-500"} h-1.5 rounded-full`}
+                                                                                className={`${isCurrentTeam ? "bg-yellow-500" : "bg-yellow-700/50"} h-1.5 rounded-full`}
                                                                                 style={{ width: `${challenges.length > 0 ? ((team.solvedChallenges?.length || 0) / challenges.length) * 100 : 0}%` }}
                                                                             ></div>
                                                                         </div>
-                                                                        <span className="text-xs text-gray-500 mt-1 block">
+                                                                        <span className="text-xs text-yellow-500 mt-1 block">
                                                                             {team.solvedChallenges?.length || 0} / {challenges.length}
                                                                         </span>
                                                                     </td>
-                                                                    <td className={`px-6 py-4 whitespace-nowrap text-sm text-right ${isCurrentTeam ? "font-bold text-blue-300" : "font-medium text-gray-300"}`}>
+                                                                    <td className={`px-6 py-4 whitespace-nowrap text-sm text-right ${isCurrentTeam ? "font-bold text-yellow-300" : "font-medium text-yellow-200"}`}>
                                                                         {team.score || 0}
                                                                     </td>
                                                                 </tr>
                                                             );
                                                         }) : (
                                                             <tr>
-                                                                <td colSpan="4" className="px-6 py-4 text-sm text-center text-gray-500">
+                                                                <td colSpan="4" className="px-6 py-4 text-sm text-center text-yellow-500">
                                                                     No teams have registered yet
                                                                 </td>
                                                             </tr>
@@ -811,30 +810,30 @@ function Home() {
                             ) : (
                                 <div className="py-6">
                                     {eventStatus === 'not-started' ? (
-                                        <div className="flex flex-col items-center text-center p-6 bg-gray-900/50 rounded-xl border border-gray-700">
-                                            <div className="w-20 h-20 bg-blue-900/40 rounded-full flex items-center justify-center mb-4 animate-pulse">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <div className="flex flex-col items-center text-center p-6 bg-black rounded-xl border border-yellow-700/30">
+                                            <div className="w-20 h-20 bg-yellow-900/40 rounded-full flex items-center justify-center mb-4 animate-pulse">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                             </div>
-                                            <p className="text-blue-200 text-lg mb-2 font-medium font-mono">
+                                            <p className="text-yellow-200 text-lg mb-2 font-medium font-mono">
                                                 STANDBY FOR MISSION BRIEFING
                                             </p>
-                                            <p className="text-gray-400 font-mono">
+                                            <p className="text-yellow-500 font-mono">
                                                 Prepare for deployment. Review protocols and await further instructions.
                                             </p>
                                         </div>
                                     ) : (
-                                        <div className="flex flex-col items-center text-center p-6 bg-gray-900/50 rounded-xl border border-gray-700">
-                                            <div className="w-20 h-20 bg-blue-900/40 rounded-full flex items-center justify-center mb-4">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <div className="flex flex-col items-center text-center p-6 bg-black rounded-xl border border-yellow-700/30">
+                                            <div className="w-20 h-20 bg-yellow-900/40 rounded-full flex items-center justify-center mb-4">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                             </div>
-                                            <p className="text-blue-200 text-lg mb-2 font-medium font-mono">
+                                            <p className="text-yellow-200 text-lg mb-2 font-medium font-mono">
                                                 OPERATION COMPLETE
                                             </p>
-                                            <p className="text-gray-400 font-mono">
+                                            <p className="text-yellow-500 font-mono">
                                                 Mission files have been sealed. Thank you for your service.
                                             </p>
                                         </div>
@@ -844,31 +843,31 @@ function Home() {
                         </div>
 
                         {/* Additional Information Card */}
-                        <div className="bg-gradient-to-r from-green-900/30 to-cyan-900/30 p-5 rounded-xl border border-green-700/30 shadow-xl">
-                            <div className="bg-green-800/50 p-2 w-10 h-10 rounded-lg mb-4 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div className="bg-gradient-to-r from-yellow-900/30 to-amber-900/30 p-5 rounded-xl border border-yellow-700/30 shadow-xl">
+                            <div className="bg-yellow-900/50 p-2 w-10 h-10 rounded-lg mb-4 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                 </svg>
                             </div>
-                            <h3 className="text-lg font-semibold text-green-200 mb-3 font-mono">CONTACT COMMAND</h3>
-                            <p className="text-sm text-green-100/70 leading-relaxed font-mono">
-                                For mission assistance, encrypted channel available at: <a href="mailto:opensourcechandigarh@chitkara.edu.in" className="text-cyan-300 hover:text-cyan-200 font-medium underline">opensourcechandigarh@chitkara.edu.in</a>
+                            <h3 className="text-lg font-semibold text-yellow-200 mb-3 font-mono">CONTACT COMMAND</h3>
+                            <p className="text-sm text-yellow-100/70 leading-relaxed font-mono">
+                                For mission assistance, encrypted channel available at: <a href="mailto:opensourcechandigarh@chitkara.edu.in" className="text-yellow-300 hover:text-yellow-200 font-medium underline">opensourcechandigarh@chitkara.edu.in</a>
                             </p>
                         </div>
                     </div>
                 </div>
             </main>
 
-            {/* Cyber-themed footer with terminal styling */}
-            <footer className="bg-gray-900 border-t border-gray-800 mt-12 py-6">
+            {/* Yellow/Black themed footer */}
+            <footer className="bg-black border-t border-yellow-700/30 mt-12 py-6">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex flex-col items-center md:flex-row md:justify-between">
                         <div className="flex items-center mb-4 md:mb-0">
-                            <div className="h-1 w-1 bg-green-500 rounded-full mr-1 animate-ping"></div>
-                            <div className="h-1 w-1 bg-green-500 rounded-full mr-2"></div>
-                            <span className="font-mono text-green-400 text-sm">CID CTF::PLATFORM</span>
+                            <div className="h-1 w-1 bg-yellow-500 rounded-full mr-1 animate-ping"></div>
+                            <div className="h-1 w-1 bg-yellow-500 rounded-full mr-2"></div>
+                            <span className="font-mono text-yellow-400 text-sm">CID CTF::PLATFORM</span>
                         </div>
-                        <p className="text-sm text-gray-500 font-mono">
+                        <p className="text-sm text-yellow-700 font-mono">
                             &copy; {new Date().getFullYear()} CID CTF Platform. All rights reserved.
                         </p>
                     </div>
@@ -877,5 +876,4 @@ function Home() {
         </div>
     );
 }
-
 export default Home;

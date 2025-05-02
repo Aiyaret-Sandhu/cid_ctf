@@ -7,6 +7,8 @@ import Login from './pages/Login';
 import Home from './pages/Home';
 import Admin from './pages/Admin';
 import Challenges from './pages/Challenges';
+import Leaderboard from './pages/Leaderboard';
+import Dashboard from './pages/Dashboard';
 
 // Create an auth context to share user state
 export const AuthContext = createContext();
@@ -14,12 +16,12 @@ export const AuthContext = createContext();
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
-      
+
       // Store user in localStorage for components that need it
       if (currentUser) {
         localStorage.setItem('user', JSON.stringify({
@@ -30,17 +32,17 @@ function App() {
         localStorage.removeItem('user');
       }
     });
-    
+
     return () => unsubscribe();
   }, []);
-  
+
   // Protected route component
   const ProtectedRoute = ({ children }) => {
     if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
     if (!user) return <Navigate to="/login" replace />;
     return children;
   };
-  
+
   return (
     <AuthContext.Provider value={{ user, loading }}>
       <Router>
@@ -48,10 +50,10 @@ function App() {
           <Routes>
             {/* Redirect from root to login */}
             <Route path="/" element={<Navigate to="/login" replace />} />
-            
+
             {/* Login page */}
             <Route path="/login" element={<Login />} />
-            
+
             {/* Protected Home page */}
             <Route path="/home" element={
               <ProtectedRoute>
@@ -70,11 +72,23 @@ function App() {
                 <Challenges />
               </ProtectedRoute>
             } />
-            
+
             {/* Protected Admin page */}
             <Route path="/admin" element={
               <ProtectedRoute>
                 <Admin />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/leaderboard" element={
+              <ProtectedRoute>
+                <Leaderboard />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
               </ProtectedRoute>
             } />
           </Routes>

@@ -183,13 +183,13 @@ function Home() {
             setLeaderboardLoading(true);
             const teamsRef = collection(db, "teams");
             const teamsSnapshot = await getDocs(teamsRef);
-    
+
             if (teamsSnapshot.empty) {
                 console.log("No teams found in the database");
                 setAllTeams([]);
                 return;
             }
-    
+
             const teamsList = teamsSnapshot.docs.map(doc => {
                 const data = doc.data();
                 return {
@@ -201,7 +201,7 @@ function Home() {
                     completedAt: data.completedAt || null, // Ensure this field exists in Firestore
                 };
             });
-    
+
             // Sort by score (highest first), then by completion time (earliest first)
             const sortedTeams = teamsList.sort((a, b) => {
                 if (b.score !== a.score) {
@@ -212,7 +212,7 @@ function Home() {
                 }
                 return 0; // If no completion time, keep order
             });
-    
+
             console.log("Teams loaded for leaderboard:", sortedTeams.length);
             console.log(sortedTeams);
             setAllTeams(sortedTeams);
@@ -358,6 +358,16 @@ function Home() {
                                     <div className="text-sm text-white mr-3 hidden sm:block">
                                         {user.email}
                                     </div>
+
+                                    <Link
+                                        to="/leaderboard"
+                                        className="inline-flex items-center px-3 py-1.5 border border-white/20 text-sm leading-4 font-medium rounded-md text-white bg-indigo-600/70 hover:bg-indigo-600 mr-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-sm hover:shadow"
+                                    >
+                                        <svg className="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                        </svg>
+                                        Leaderboard
+                                    </Link>
 
                                     <button
                                         onClick={handleSignOut}

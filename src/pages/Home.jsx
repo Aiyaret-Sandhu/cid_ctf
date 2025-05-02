@@ -291,35 +291,67 @@ function Home() {
         }
     }, [eventStatus, user, teamData]);
 
+    // Improved loader UI with yellow/black theme
     if (loading || registrationChecking) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-100">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-                    <p className="mt-3 text-gray-600">Loading...</p>
+            <div className="flex items-center justify-center min-h-screen bg-black">
+                <div className="text-center p-6 bg-black border border-yellow-700/30 rounded-xl shadow-xl backdrop-blur-sm max-w-md">
+                    <div className="relative mx-auto w-20 h-20 mb-6">
+                        {/* Outer ring */}
+                        <div className="absolute inset-0 rounded-full border-4 border-yellow-500/20"></div>
+                        {/* Spinning element */}
+                        <div className="absolute inset-2 rounded-full border-t-4 border-l-4 border-yellow-500 animate-spin"></div>
+                        {/* Pulsing center */}
+                        <div className="absolute inset-5 rounded-full bg-yellow-600/80 animate-pulse flex items-center justify-center">
+                            <div className="h-2 w-2 rounded-full bg-yellow-300"></div>
+                        </div>
+                    </div>
+
+                    <h3 className="text-xl font-mono text-yellow-300 mb-2">SECURE SYSTEM LOADING</h3>
+                    <p className="text-yellow-500/80 font-mono text-sm flex items-center justify-center">
+                        <span className="h-1.5 w-1.5 bg-yellow-500 rounded-full mr-2 animate-ping"></span>
+                        Establishing secure connection...
+                    </p>
+
+                    {/* Fake terminal-like progress indicator */}
+                    <div className="mt-4 bg-black border border-yellow-700/50 rounded p-2 text-left font-mono text-xs">
+                        <div className="text-yellow-500/70"> Initializing CID database...</div>
+                        <div className="text-yellow-500/70"> Loading authentication protocols...</div>
+                        <div className="flex items-center text-yellow-300">
+                            <span className="animate-pulse mr-1"></span> Verifying credentials
+                            <span className="ml-1 animate-pulse">_</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
     }
-
+    // Updated registration required UI with yellow/black theme
     if (isRegistered === false) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-100">
-                <div className="text-center">
-                    <div className="bg-white shadow-lg rounded-lg p-8 max-w-md mx-auto">
-                        <svg className="h-16 w-16 text-indigo-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            <div className="flex items-center justify-center min-h-screen bg-black">
+                <div className="text-center p-8 bg-black border border-yellow-700/30 rounded-xl shadow-xl max-w-md mx-auto">
+                    <div className="w-16 h-16 bg-yellow-900/40 rounded-full flex items-center justify-center mb-6 mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-4 mt-4">Registration Required</h2>
-                        <p className="text-gray-600 mb-6">You need to register your team before participating in the CTF.</p>
-                        <div className="flex justify-center space-x-4">
-                            <button
-                                onClick={handleSignOut}
-                                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
-                            >
-                                Sign Out
-                            </button>
-                        </div>
+                    </div>
+                    <h2 className="text-xl font-bold text-yellow-300 mb-4 font-mono">REGISTRATION REQUIRED</h2>
+                    <div className="border-t border-yellow-700/30 pt-4">
+                        <p className="text-yellow-100/70 mb-6 font-mono">
+                            You need to register your team before participating in the CTF operation.
+                        </p>
+                    </div>
+                    <div className="flex justify-center space-x-4 mt-6">
+                        <button
+                            onClick={handleSignOut}
+                            className="px-5 py-2 bg-red-900/70 text-red-100 border border-red-700/50 rounded hover:bg-red-800 transition flex items-center font-mono"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H3zm11 3a1 1 0 10-2 0v6a1 1 0 102 0V6zm-6 0a1 1 0 10-2 0v6a1 1 0 102 0V6z" clipRule="evenodd" />
+                            </svg>
+                            EXIT SYSTEM
+                        </button>
                     </div>
                 </div>
             </div>

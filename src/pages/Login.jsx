@@ -34,7 +34,8 @@ const InteractiveBackground = () => {
         this.size = Math.random() * 3 + 1;
         this.speedX = Math.random() * 1 - 0.5;
         this.speedY = Math.random() * 1 - 0.5;
-        this.color = `rgba(5, 223, 114, ${Math.random() * 0.8})`;
+        // Changed color to yellow theme
+        this.color = `rgba(253, 224, 71, ${Math.random() * 0.8})`;
       }
       
       update() {
@@ -70,7 +71,8 @@ const InteractiveBackground = () => {
           const distance = Math.sqrt(dx * dx + dy * dy);
           
           if (distance < 100) {
-            ctx.strokeStyle = `rgba(5, 223, 114, ${0.1 - distance/1000})`;
+            // Changed connection color to yellow theme
+            ctx.strokeStyle = `rgba(253, 224, 71, ${0.1 - distance/1000})`;
             ctx.lineWidth = 0.5;
             ctx.beginPath();
             ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
@@ -152,7 +154,6 @@ function Login() {
 
   const handleGoogleLogin = async () => {
     try {
-
       await startGoogleAuth();
       
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -179,37 +180,44 @@ function Login() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white flex flex-col items-center justify-center p-4 relative">
+    <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black text-white flex flex-col items-center justify-center p-4 relative font-mono">
       <InteractiveBackground />
       
-      <div className="absolute top-4 left-4 flex items-center text-[#05df72]">
+      {/* Added glowing effects matching other pages */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full opacity-10 bg-yellow-600 blur-[80px]"></div>
+        <div className="absolute bottom-0 left-1/4 w-[600px] h-[300px] rounded-full opacity-10 bg-yellow-600 blur-[80px]"></div>
+        <div className="absolute top-1/4 right-1/4 w-[400px] h-[300px] rounded-full opacity-10 bg-yellow-600 blur-[80px]"></div>
+      </div>
+      
+      <div className="absolute top-4 left-4 flex items-center text-yellow-400 z-10">
         <Terminal className="w-5 h-5 mr-2" />
         <span className="text-sm font-mono">CID v4.2.1</span>
       </div>
       
-      <div className="w-full max-w-md md:max-w-lg bg-black bg-opacity-40 backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800 p-6 md:p-8 relative z-10 overflow-hidden">
+      <div className="w-full max-w-md md:max-w-lg bg-black/50 backdrop-blur-lg rounded-xl shadow-2xl border border-yellow-700/30 p-6 md:p-8 relative z-10 overflow-hidden">
         {/* Terminal-like header bar */}
-        <div className="absolute top-0 left-0 right-0 h-8 bg-black bg-opacity-80 flex items-center px-3">
+        <div className="absolute top-0 left-0 right-0 h-8 bg-black/80 flex items-center px-3 border-b border-yellow-700/30">
           <div className="flex space-x-1.5">
             <div className="w-3 h-3 rounded-full bg-red-500"></div>
             <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
             <div className="w-3 h-3 rounded-full bg-green-500"></div>
           </div>
-          <div className="text-xs text-gray-400 mx-auto font-mono">CID Secure Terminal</div>
+          <div className="text-xs text-yellow-400/70 mx-auto font-mono">CID Secure Terminal</div>
         </div>
         
         <div className="mt-8">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-black bg-opacity-50 rounded-full border-2 border-[#05df72] mb-4 relative overflow-hidden">
-              <Shield className="text-[#05df72] w-10 h-10" />
-              <div className="absolute w-full h-1 bg-[#05df72] opacity-70 animate-scan" />
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-black/50 rounded-full border-2 border-yellow-400 mb-4 relative overflow-hidden">
+              <Shield className="text-yellow-400 w-10 h-10" />
+              <div className="absolute w-full h-1 bg-yellow-400 opacity-70 animate-scan" />
             </div>
             
-            <h1 className="text-3xl md:text-4xl font-bold text-[#fdc700] mb-2 tracking-wider">
+            <h1 className="text-3xl md:text-4xl font-bold text-yellow-400 mb-2 tracking-wider">
               CID-CTF LOGIN
             </h1>
             
-            <div className="flex items-center justify-center text-[#e4000b] animate-pulse mb-4">
+            <div className="flex items-center justify-center text-red-400 animate-pulse mb-4">
               <AlertCircle className="w-5 h-5 mr-2" />
               <p className="text-sm md:text-base font-semibold tracking-wide">
                 SECURITY CLEARANCE REQUIRED
@@ -225,17 +233,17 @@ function Login() {
                 w-40 h-40 rounded-full flex items-center justify-center cursor-pointer 
                 relative overflow-hidden transition-all duration-300
                 ${scanning 
-                  ? 'bg-black border-4 border-[#05df72] shadow-[0_0_30px_rgba(5,223,114,0.7)]' 
-                  : 'bg-gray-900 border-2 border-[#05df72] shadow-[0_0_15px_rgba(5,223,114,0.3)] hover:shadow-[0_0_20px_rgba(5,223,114,0.5)]'}
+                  ? 'bg-black border-4 border-yellow-400 shadow-[0_0_30px_rgba(253,224,71,0.7)]' 
+                  : 'bg-black/70 border-2 border-yellow-400 shadow-[0_0_15px_rgba(253,224,71,0.3)] hover:shadow-[0_0_20px_rgba(253,224,71,0.5)]'}
               `}
             >
               {scanning ? (
                 <>
-                  <Loader className="w-16 h-16 text-[#05df72] animate-spin" />
-                  <div className="absolute w-full h-1.5 bg-[#05df72] opacity-70 top-0 animate-scan"></div>
+                  <Loader className="w-16 h-16 text-yellow-400 animate-spin" />
+                  <div className="absolute w-full h-1.5 bg-yellow-400 opacity-70 top-0 animate-scan"></div>
                 </>
               ) : (
-                <Fingerprint className="w-20 h-20 text-[#05df72] opacity-80" />
+                <Fingerprint className="w-20 h-20 text-yellow-400 opacity-80" />
               )}
             </div>
             
@@ -243,14 +251,14 @@ function Login() {
               <div className="w-full mt-6 mb-2">
                 <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-[#05df72] transition-all duration-300 ease-out"
+                    className="h-full bg-yellow-400 transition-all duration-300 ease-out"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
               </div>
             )}
             
-            <p className={`mt-4 text-center ${scanning ? 'text-[#05df72]' : 'text-gray-400'}`}>
+            <p className={`mt-4 text-center ${scanning ? 'text-yellow-400' : 'text-yellow-400/70'}`}>
               {message}
             </p>
 
@@ -259,7 +267,7 @@ function Login() {
             )}
           </div>
           
-          <div className="mt-8 text-center text-xs text-gray-500">
+          <div className="mt-8 text-center text-xs text-yellow-400/50">
             <div className="flex flex-col items-center space-y-2">
               <p>
                 This portal is protected by CID Intelligence Division.
@@ -274,16 +282,26 @@ function Login() {
               </div>
             </div>
             
-            <div className="mt-4 pt-2 border-t border-gray-800">
-              <span className="text-[#05df72]">
-                © {new Date().getFullYear()} Criminal Investigation Department. All rights reserved.
-              </span>
+            <div className="mt-4 pt-2 border-t border-yellow-700/30">
+              <div className="flex items-center justify-center">
+                <div className="h-1 w-1 bg-yellow-500 rounded-full mr-1 animate-ping"></div>
+                <div className="h-1 w-1 bg-yellow-500 rounded-full mr-1"></div>
+                <span className="text-yellow-400">
+                  © {new Date().getFullYear()} Criminal Investigation Department. All rights reserved.
+                </span>
+              </div>
             </div>
           </div>
         </div>
+        
+        {/* Police tape effect at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-4" style={{
+          background: 'repeating-linear-gradient(45deg, yellow, yellow 10px, black 10px, black 20px)',
+          opacity: 0.5
+        }}></div>
       </div>
     </div>
   );
 }
 
-export default Login; 
+export default Login;

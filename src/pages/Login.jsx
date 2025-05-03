@@ -287,7 +287,7 @@ function Login() {
                 <div className="h-1 w-1 bg-yellow-500 rounded-full mr-1 animate-ping"></div>
                 <div className="h-1 w-1 bg-yellow-500 rounded-full mr-1"></div>
                 <span className="text-yellow-400">
-                  © {new Date().getFullYear()} Criminal Investigation Department. All rights reserved.
+                  © {new Date().getFullYear()} Cipher Investigate Decrypt. All rights reserved.
                 </span>
               </div>
             </div>

@@ -525,30 +525,97 @@ function Challenges() {
         return () => unsubscribe();
     }, []);
 
-    // Check if all challenges are completed and redirect to home if they are
+    // Update the useEffect that checks for all completed challenges (around line 520-540)
+
+    // Check if all challenges are completed and show appropriate message
     useEffect(() => {
-        if (teamData?.solvedChallenges && challenges.length > 0) {
-            const allSolved = challenges.every(challenge =>
-                teamData.solvedChallenges.includes(challenge.id)
-            );
+        const checkCompletionStatus = async () => {
+            if (teamData?.solvedChallenges && challenges.length > 0) {
+                const allSolved = challenges.every(challenge =>
+                    teamData.solvedChallenges.includes(challenge.id)
+                );
 
-            setAllCompleted(allSolved);
+                setAllCompleted(allSolved);
 
-            // If all challenges are completed and we're viewing the last challenge,
-            // redirect to home after a delay
-            if (allSolved && !submitResult) {
-                setSubmitResult({
-                    success: true,
-                    message: "Congratulations! You've completed all challenges. Redirecting to home page..."
-                });
+                // If all challenges are completed and we're viewing the last challenge,
+                // show appropriate message
+                if (allSolved && !submitResult) {
+                    try {
+                        // Get settings to check if team grouping is enabled
+                        const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
+                        const settingsData = settingsDoc.exists() ? settingsDoc.data() : {};
 
-                setTimeout(() => {
-                    exitFullscreen(); // Exit fullscreen before redirecting
-                    navigate('/home');
-                }, 5000); // 5 second delay before redirecting
+                        if (settingsData.enableTeamGrouping) {
+                            // Fetch all teams
+                            const teamsRef = collection(db, "teams");
+                            const teamsSnapshot = await getDocs(teamsRef);
+
+                            // Get teams list - sort alphabetically for consistent grouping
+                            const teamsList = teamsSnapshot.docs
+                                .map(doc => ({
+                                    id: doc.id,
+                                    ...doc.data()
+                                }))
+                                .sort((a, b) => a.name.localeCompare(b.name));
+
+                            // Get total number of teams
+                            const totalTeams = teamsList.length;
+
+                            // Calculate group size - divide teams equally
+                            const groupCount = settingsData.groupCount || 2;
+                            const teamsPerGroup = Math.ceil(totalTeams / groupCount);
+
+                            // Find this team's index in the alphabetically sorted teams array
+                            const teamIndex = teamsList.findIndex(t => t.id === teamData.id);
+
+                            if (teamIndex >= 0) {
+                                // Calculate which group this team belongs to
+                                const groupIndex = Math.min(Math.floor(teamIndex / teamsPerGroup), groupCount - 1);
+
+                                // Get the appropriate message
+                                const groupMessage = settingsData[`groupMessage${groupIndex + 1}`] ||
+                                    "Congratulations! You've completed all challenges.";
+
+                                setSubmitResult({
+                                    success: true,
+                                    message: groupMessage,
+                                    isCustomGroupMessage: true
+                                });
+                                setAllCompleted(true);
+                                return;
+                            }
+                        }
+
+                        // Default message if team grouping is disabled or error
+                        setSubmitResult({
+                            success: true,
+                            message: "Congratulations! You've completed all challenges. Redirecting to home page..."
+                        });
+                        setAllCompleted(true);
+                        setTimeout(() => {
+                            exitFullscreen();
+                            navigate('/home');
+                        }, 5000);
+
+                    } catch (error) {
+                        console.error("Error checking team group:", error);
+                        // Fall back to default message
+                        setSubmitResult({
+                            success: true,
+                            message: "Congratulations! You've completed all challenges. Redirecting to home page..."
+                        });
+                        setAllCompleted(true);
+                        setTimeout(() => {
+                            exitFullscreen();
+                            navigate('/home');
+                        }, 5000);
+                    }
+                }
             }
-        }
-    }, [teamData?.solvedChallenges, challenges, navigate, submitResult]);
+        };
+
+        checkCompletionStatus();
+    }, [teamData?.solvedChallenges, challenges, submitResult, navigate]);
 
     // Fetch team data to get solved challenges
     useEffect(() => {
@@ -613,6 +680,9 @@ function Challenges() {
 
         checkEventStatus();
     }, [navigate]);
+
+
+
 
     // Fetch available challenges
     useEffect(() => {
@@ -940,18 +1010,90 @@ function Challenges() {
                     );
 
                     if (allSolved) {
-                        setSubmitResult({
-                            success: true,
-                            message: "Congratulations! You've completed all challenges. Redirecting to home page..."
-                        });
-                        setAllCompleted(true);
-
-                        // Redirect to home after delay
-                        setTimeout(() => {
-                            exitFullscreen(); // Only exit fullscreen before redirecting on completion
-                            navigate('/home');
-                        }, 5000);
+                        try {
+                            // Update team's completedAt time if it doesn't exist yet
+                            if (!teamData.completedAt) {
+                                await updateDoc(teamRef, {
+                                    completedAt: new Date(),
+                                });
+                            }
+                            
+                            // Get settings to check if team grouping is enabled
+                            const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
+                            const settingsData = settingsDoc.exists() ? settingsDoc.data() : {};
+                            
+                            if (settingsData.enableTeamGrouping) {
+                                // Fetch all teams
+                                const teamsRef = collection(db, "teams");
+                                const teamsSnapshot = await getDocs(teamsRef);
+                                
+                                // Get teams list - sort alphabetically for consistent grouping
+                                const teamsList = teamsSnapshot.docs
+                                    .map(doc => ({
+                                        id: doc.id,
+                                        ...doc.data()
+                                    }))
+                                    .sort((a, b) => a.name.localeCompare(b.name));
+                                
+                                // Get total number of teams
+                                const totalTeams = teamsList.length;
+                                
+                                // Calculate group size - divide teams equally
+                                const groupCount = parseInt(settingsData.groupCount || 2);
+                                const teamsPerGroup = Math.ceil(totalTeams / groupCount);
+                                
+                                // Find this team's index in the alphabetically sorted teams array
+                                const teamIndex = teamsList.findIndex(t => t.id === teamData.id);
+                                
+                                if (teamIndex >= 0) {
+                                    // Calculate which group this team belongs to
+                                    const groupIndex = Math.min(Math.floor(teamIndex / teamsPerGroup), groupCount - 1);
+                                    
+                                    // Get the appropriate message
+                                    const messageKey = `groupMessage${groupIndex+1}`;
+                                    const groupMessage = settingsData[messageKey] || 
+                                        "Congratulations! You've completed all challenges.";
+                                    
+                                    console.log(`Team in group ${groupIndex+1}, showing message: ${groupMessage}`);
+                                    
+                                    setSubmitResult({
+                                        success: true,
+                                        message: groupMessage,
+                                        isCustomGroupMessage: true
+                                    });
+                                    
+                                    // Don't redirect automatically for custom group messages
+                                    setAllCompleted(true);
+                                    return;
+                                }
+                            }
+                            
+                            // Default message if team grouping is disabled or there was an error
+                            setSubmitResult({
+                                success: true,
+                                message: "Congratulations! You've completed all challenges. Redirecting to home page..."
+                            });
+                            setAllCompleted(true);
+                            
+                            // Redirect to home after delay
+                            setTimeout(() => {
+                                exitFullscreen();
+                                navigate('/home');
+                            }, 5000);
+                        } catch (error) {
+                            console.error("Error processing completion:", error);
+                            setSubmitResult({
+                                success: true,
+                                message: "Congratulations! You've completed all challenges. Redirecting to home page..."
+                            });
+                            setAllCompleted(true);
+                            setTimeout(() => {
+                                exitFullscreen();
+                                navigate('/home');
+                            }, 5000);
+                        }
                     } else {
+                        // Handle non-completion case
                         setSubmitResult({
                             success: true,
                             message: `Correct! You've earned ${selectedChallenge.points} points.`
@@ -1052,7 +1194,6 @@ function Challenges() {
     if (allCompleted) {
         return (
             <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-                {/* Header */}
                 <header className="bg-gradient-to-r from-indigo-600 to-blue-500 shadow-md">
                     <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
                         <Link to="/home" className="text-2xl font-bold text-white flex items-center">
@@ -1094,13 +1235,20 @@ function Challenges() {
                         <p className="text-lg text-green-700 mb-4">
                             You've successfully completed all challenges!
                         </p>
-                        <p className="text-md text-green-600 mb-8">
+                        <p className="text-md text-green-600 mb-6">
                             Your final score: <span className="font-bold">{teamData?.score || 0}</span> points.
                         </p>
 
-                        <div className="animate-pulse text-sm text-green-500">
-                            Redirecting to home page...
-                        </div>
+                        {/* Display the custom group message instead of the default message */}
+                        {submitResult && submitResult.isCustomGroupMessage ? (
+                            <div className="mt-4 text-lg font-medium text-indigo-800 border-t pt-4 border-green-200">
+                                {submitResult.message}
+                            </div>
+                        ) : (
+                            <div className="animate-pulse text-sm text-green-500">
+                                Redirecting to home page...
+                            </div>
+                        )}
                     </div>
                 </main>
             </div>
@@ -1141,7 +1289,7 @@ function Challenges() {
         }
     };
 
-    
+
 
     // Display the current challenge
     return (
@@ -1434,8 +1582,8 @@ function Challenges() {
                                                 {submitResult.message}
                                             </p>
 
-                                            {/* If this message indicates all challenges are completed, add a countdown */}
-                                            {submitResult.message.includes("Redirecting") && (
+                                            {/* Only show redirecting message if it contains "Redirecting" AND is not a custom group message */}
+                                            {submitResult.success && submitResult.message.includes("Redirecting") && !submitResult.isCustomGroupMessage && (
                                                 <div className="mt-2 text-center">
                                                     <div className="animate-pulse text-sm text-green-500">
                                                         Redirecting to home page...

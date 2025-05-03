@@ -8,7 +8,6 @@ import Home from './pages/Home';
 import Admin from './pages/Admin';
 import Challenges from './pages/Challenges';
 import Leaderboard from './pages/Leaderboard';
-import Dashboard from './pages/Dashboard';
 
 // Create an auth context to share user state
 export const AuthContext = createContext();
@@ -86,11 +85,6 @@ function App() {
               </ProtectedRoute>
             } />
             
-            {/* <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } /> */}
           </Routes>
         </div>
       </Router>

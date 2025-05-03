@@ -36,7 +36,23 @@ const Scoreboard = memo(({ teams: initialTeams, loading: initialLoading }) => {
   }, []);
 
   // Sort teams by score in descending order
-  const sortedTeams = [...teams].sort((a, b) => b.score - a.score);
+  const sortedTeams = [...teams].sort((a, b) => {
+    // First sort by score (highest first)
+    if (b.score !== a.score) {
+      return b.score - a.score;
+    }
+    
+    // If scores are tied, sort by completion time (earliest first)
+    if (a.completedAt && b.completedAt) {
+      return a.completedAt.seconds - b.completedAt.seconds;
+    } else if (a.completedAt) {
+      return -1; // a comes first if only a has completedAt
+    } else if (b.completedAt) {
+      return 1;  // b comes first if only b has completedAt
+    }
+    
+    return 0;
+  });
 
   // Function to refresh the scoreboard data
   const refreshScoreboard = async () => {

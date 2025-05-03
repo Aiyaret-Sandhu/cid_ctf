@@ -9,6 +9,9 @@ import Admin from './pages/Admin';
 import Challenges from './pages/Challenges';
 import Leaderboard from './pages/Leaderboard';
 
+
+import { Analytics } from "@vercel/analytics/react"
+
 // Create an auth context to share user state
 export const AuthContext = createContext();
 
@@ -88,6 +91,8 @@ function App() {
           </Routes>
         </div>
       </Router>
+
+      <Analytics />
     </AuthContext.Provider>
   );
 }

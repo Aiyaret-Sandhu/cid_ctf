@@ -55,9 +55,9 @@ function Challenges() {
 
     const FullscreenDialog = () => (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-            <div className="bg-white p-8 rounded-lg max-w-md w-full">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Enter Fullscreen Mode</h3>
-                <p className="mb-6 text-gray-600">
+            <div className="bg-zinc-900 p-8 rounded-lg max-w-md w-full border border-yellow-400/40 shadow-lg">
+                <h3 className="text-xl font-semibold text-yellow-400 mb-4">Enter Fullscreen Mode</h3>
+                <p className="mb-6 text-gray-300">
                     This challenge requires fullscreen mode. Tab switches will be counted and may affect your ability to submit the flag.
                     You cannot exit fullscreen without submitting your answer.
                 </p>
@@ -68,7 +68,7 @@ function Challenges() {
                             setShowFullscreenDialog(false);
                             navigate('/challenges');
                         }}
-                        className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg"
+                        className="bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 px-6 rounded-lg border border-gray-700"
                     >
                         Cancel
                     </button>
@@ -77,7 +77,7 @@ function Challenges() {
                             enterFullscreen();
                             setShowFullscreenDialog(false);
                         }}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg flex items-center"
+                        className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-6 rounded-lg flex items-center"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z" clipRule="evenodd" />
@@ -92,15 +92,15 @@ function Challenges() {
     const ExitFullscreenDialog = ({ onStay, onExit }) => {
         return (
             <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-80">
-                <div className="bg-white p-8 rounded-lg max-w-md w-full border-4 border-red-500">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Exit Challenge?</h3>
-                    <p className="mb-6 text-gray-600">
+                <div className="bg-zinc-900 p-8 rounded-lg max-w-md w-full border border-red-500/40 shadow-lg">
+                    <h3 className="text-xl font-semibold text-red-400 mb-4">Exit Challenge?</h3>
+                    <p className="mb-6 text-gray-300">
                         Are you sure you want to exit this challenge? This will mark the challenge as attempted and you cannot try it again.
                     </p>
                     <div className="flex justify-between">
                         <button
                             onClick={onStay}
-                            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg"
+                            className="bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 px-6 rounded-lg border border-gray-700"
                         >
                             Stay in Challenge
                         </button>
@@ -589,13 +589,13 @@ function Challenges() {
                         // Default message if team grouping is disabled or error
                         setSubmitResult({
                             success: true,
-                            message: "Congratulations! You've completed all challenges. Redirecting to home page..."
+                            message: "Congratulations! You've completed all challenges. "
                         });
                         setAllCompleted(true);
-                        setTimeout(() => {
-                            exitFullscreen();
-                            navigate('/home');
-                        }, 5000);
+                        // setTimeout(() => {
+                        //     exitFullscreen();
+                        //     navigate('/home');
+                        // }, 5000);
 
                     } catch (error) {
                         console.error("Error checking team group:", error);
@@ -721,9 +721,9 @@ function Challenges() {
 
                     if (allSolved) {
                         setAllCompleted(true);
-                        setTimeout(() => {
-                            navigate('/home');
-                        }, 5000); // Redirect after 5 seconds if all challenges are solved
+                        // setTimeout(() => {
+                        //     navigate('/home');
+                        // }, 5000); // Redirect after 5 seconds if all challenges are solved
                         return;
                     }
                 }
@@ -1017,16 +1017,16 @@ function Challenges() {
                                     completedAt: new Date(),
                                 });
                             }
-                            
+
                             // Get settings to check if team grouping is enabled
                             const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
                             const settingsData = settingsDoc.exists() ? settingsDoc.data() : {};
-                            
+
                             if (settingsData.enableTeamGrouping) {
                                 // Fetch all teams
                                 const teamsRef = collection(db, "teams");
                                 const teamsSnapshot = await getDocs(teamsRef);
-                                
+
                                 // Get teams list - sort alphabetically for consistent grouping
                                 const teamsList = teamsSnapshot.docs
                                     .map(doc => ({
@@ -1034,52 +1034,52 @@ function Challenges() {
                                         ...doc.data()
                                     }))
                                     .sort((a, b) => a.name.localeCompare(b.name));
-                                
+
                                 // Get total number of teams
                                 const totalTeams = teamsList.length;
-                                
+
                                 // Calculate group size - divide teams equally
                                 const groupCount = parseInt(settingsData.groupCount || 2);
                                 const teamsPerGroup = Math.ceil(totalTeams / groupCount);
-                                
+
                                 // Find this team's index in the alphabetically sorted teams array
                                 const teamIndex = teamsList.findIndex(t => t.id === teamData.id);
-                                
+
                                 if (teamIndex >= 0) {
                                     // Calculate which group this team belongs to
                                     const groupIndex = Math.min(Math.floor(teamIndex / teamsPerGroup), groupCount - 1);
-                                    
+
                                     // Get the appropriate message
-                                    const messageKey = `groupMessage${groupIndex+1}`;
-                                    const groupMessage = settingsData[messageKey] || 
+                                    const messageKey = `groupMessage${groupIndex + 1}`;
+                                    const groupMessage = settingsData[messageKey] ||
                                         "Congratulations! You've completed all challenges.";
-                                    
-                                    console.log(`Team in group ${groupIndex+1}, showing message: ${groupMessage}`);
-                                    
+
+                                    console.log(`Team in group ${groupIndex + 1}, showing message: ${groupMessage}`);
+
                                     setSubmitResult({
                                         success: true,
                                         message: groupMessage,
                                         isCustomGroupMessage: true
                                     });
-                                    
+
                                     // Don't redirect automatically for custom group messages
                                     setAllCompleted(true);
                                     return;
                                 }
                             }
-                            
+
                             // Default message if team grouping is disabled or there was an error
                             setSubmitResult({
                                 success: true,
                                 message: "Congratulations! You've completed all challenges. Redirecting to home page..."
                             });
                             setAllCompleted(true);
-                            
+
                             // Redirect to home after delay
-                            setTimeout(() => {
-                                exitFullscreen();
-                                navigate('/home');
-                            }, 5000);
+                            // setTimeout(() => {
+                            //     exitFullscreen();
+                            //     navigate('/home');
+                            // }, 5000);
                         } catch (error) {
                             console.error("Error processing completion:", error);
                             setSubmitResult({
@@ -1132,10 +1132,13 @@ function Challenges() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black text-white font-mono flex items-center justify-center">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-                    <p className="mt-3 text-gray-600">Loading challenges...</p>
+                    <div className="w-20 h-20 mx-auto mb-6 bg-yellow-400/20 rounded-full flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-400"></div>
+                    </div>
+                    <h2 className="text-2xl font-bold text-yellow-400 mb-2">DECRYPTING FILES</h2>
+                    <p className="text-yellow-200/80">Accessing secure CID database...</p>
                 </div>
             </div>
         );
@@ -1191,64 +1194,170 @@ function Challenges() {
     }
 
     // If all challenges are completed, show completion message
+    // Update the allCompleted view to match Home page style
+
     if (allCompleted) {
         return (
-            <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-                <header className="bg-gradient-to-r from-indigo-600 to-blue-500 shadow-md">
-                    <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                        <Link to="/home" className="text-2xl font-bold text-white flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black text-white font-mono">
+                <header className="relative overflow-hidden">
+                    <div className="absolute inset-0 z-0">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full opacity-10 bg-yellow-600 blur-[80px]"></div>
+                        <div className="absolute bottom-0 left-1/4 w-[600px] h-[300px] rounded-full opacity-10 bg-yellow-600 blur-[80px]"></div>
+                        <div className="absolute top-1/4 right-1/4 w-[400px] h-[300px] rounded-full opacity-10 bg-yellow-600 blur-[80px]"></div>
+                    </div>
+
+                    <div className="relative z-10 max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                        <Link to="/home" className="text-2xl font-bold text-yellow-400 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mr-2 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
                             CID CTF Platform
                         </Link>
 
                         {teamData && (
-                            <div className="flex items-center text-white bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-lg border border-white/30">
-                                <span className="mr-2 font-medium">Final Score:</span>
-                                <span className="px-3 py-0.5 bg-white text-indigo-800 text-sm font-bold rounded-full">
+                            <div className="flex items-center text-white bg-black/50 backdrop-blur-sm px-4 py-1.5 rounded-lg border border-yellow-400/30">
+                                <span className="mr-2 font-medium text-yellow-400">Final Score:</span>
+                                <span className="px-3 py-0.5 bg-yellow-400 text-black text-sm font-bold rounded-full">
                                     {teamData.score || 0}
                                 </span>
                             </div>
                         )}
                     </div>
+
+                    {/* Animated police tape ribbons */}
+                    <div className="cid-ribbon ribbon-1">
+                        <span className="cid-text">
+                            🚧 CRIME SCENE — DO NOT CROSS — POLICE AREA — CID TEAM ON INVESTIGATION 🚨
+                        </span>
+                    </div>
+                    <div className="cid-ribbon ribbon-2">
+                        <span className="cid-text">
+                            🚧 CRIME SCENE — DO NOT CROSS — POLICE AREA — CID TEAM ON INVESTIGATION 🚨
+                        </span>
+                    </div>
+
+                    <style jsx="true">{`
+                .cid-ribbon {
+                    position: absolute;
+                    width: 300%;
+                    font-weight: bold;
+                    font-size: 20px;
+                    color: #fff;
+                    background: repeating-linear-gradient(
+                        45deg,
+                        yellow,
+                        yellow 10px,
+                        black 10px,
+                        black 20px
+                    );
+                    white-space: nowrap;
+                    text-transform: uppercase;
+                    letter-spacing: 2px;
+                    opacity: 0.9;
+                    z-index: 0;
+                    padding: 10px 0;
+                }
+    
+                .cid-text {
+                    display: inline-block;
+                    animation: marquee 30s linear infinite;
+                    padding-left: 100%;
+                }
+    
+                .ribbon-1 {
+                    top: 40%;
+                    left: -100%;
+                    transform: rotate(-25deg);
+                    animation: scroll-left 30s linear infinite;
+                }
+    
+                .ribbon-2 {
+                    bottom: 35%;
+                    right: -100%;
+                    transform: rotate(25deg);
+                    animation: scroll-right 30s linear infinite;
+                }
+    
+                @keyframes marquee {
+                    0% {
+                        transform: translateX(0%);
+                    }
+                    100% {
+                        transform: translateX(-100%);
+                    }
+                }
+    
+                @keyframes scroll-left {
+                    0% {
+                        left: -100%;
+                    }
+                    100% {
+                        left: 100%;
+                    }
+                }
+    
+                @keyframes scroll-right {
+                    0% {
+                        right: -100%;
+                    }
+                    100% {
+                        right: 100%;
+                    }
+                }
+              `}</style>
                 </header>
 
-                <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                <main className="relative z-10 max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
                     <div className="mb-6 flex items-center justify-between">
-                        <h1 className="text-3xl font-bold text-gray-900">Challenges Completed!</h1>
+                        <h1 className="text-3xl font-bold text-yellow-400 tracking-wider">CASE CLOSED!</h1>
                         <Link
                             to="/home"
-                            className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="inline-flex items-center px-4 py-2 border border-yellow-400 text-sm font-medium rounded-md shadow-sm text-black bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400"
                         >
-                            Back to Home
+                            Return to HQ
                         </Link>
                     </div>
 
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-xl shadow-lg border border-green-200 text-center">
-                        <div className="w-20 h-20 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center">
-                            <svg className="h-12 w-12 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="border-2 border-yellow-400 rounded-lg overflow-hidden bg-zinc-900/90 relative p-8 text-center">
+                        <div className="absolute top-2 left-2 flex items-center">
+                            <div className="w-3 h-3 bg-red-500 rounded-full mr-1 animate-pulse"></div>
+                            <span className="text-xs font-bold bg-black/80 px-1 py-0.5 rounded text-yellow-400">CASE COMPLETED</span>
+                        </div>
+
+                        <div className="w-20 h-20 mx-auto mb-6 bg-yellow-400/20 rounded-full flex items-center justify-center">
+                            <svg className="h-12 w-12 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <h2 className="text-2xl font-bold text-green-800 mb-4">Congratulations!</h2>
-                        <p className="text-lg text-green-700 mb-4">
-                            You've successfully completed all challenges!
+                        <h2 className="text-2xl font-bold text-yellow-400 mb-4 tracking-wider">MISSION ACCOMPLISHED</h2>
+                        <p className="text-lg text-yellow-100 mb-4">
+                            All evidence collected and case file complete.
                         </p>
-                        <p className="text-md text-green-600 mb-6">
-                            Your final score: <span className="font-bold">{teamData?.score || 0}</span> points.
+                        <p className="text-md text-yellow-200 mb-6">
+                            Intelligence points accumulated: <span className="font-bold">{teamData?.score || 0}</span>
                         </p>
 
                         {/* Display the custom group message instead of the default message */}
                         {submitResult && submitResult.isCustomGroupMessage ? (
-                            <div className="mt-4 text-lg font-medium text-indigo-800 border-t pt-4 border-green-200">
+                            <div className="mt-4 text-lg font-medium text-white border-t pt-4 border-yellow-400/30">
                                 {submitResult.message}
                             </div>
                         ) : (
-                            <div className="animate-pulse text-sm text-green-500">
-                                Redirecting to home page...
+                            <div className="animate-pulse text-sm text-yellow-400">
+                                Redirecting to headquarters...
                             </div>
                         )}
+
+                        <div className="border-t border-yellow-400/30 mt-6 pt-3 px-6 text-xs text-yellow-400/80 font-mono flex justify-between items-center">
+                            <div className="flex items-center">
+                                <div className="w-2 h-2 bg-red-500 rounded-full mr-2 animate-pulse"></div>
+                                <span>CONFIDENTIAL</span>
+                            </div>
+                            <div className="text-center">
+                                {/* <div className="text-yellow-400">🕵️‍♂️ CASE OFFICER: DIRECTOR SMITH</div> */}
+                                <div className="text-gray-400">LAST UPDATED: {new Date().toLocaleDateString()}</div>
+                            </div>
+                        </div>
                     </div>
                 </main>
             </div>
@@ -1294,17 +1403,16 @@ function Challenges() {
     // Display the current challenge
     return (
         <div ref={fullscreenRef}
-            className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100"
+            className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black text-white font-mono"
             style={{
-                overflow: 'auto',  // Ensure content is scrollable
-                height: '100vh',   // Take full viewport height
-                position: 'relative' // Enable proper positioning
+                overflow: 'auto',
+                height: '100vh',
+                position: 'relative'
             }}
         >
-
             {/* Fullscreen exit button - only show when in fullscreen */}
             {selectedChallenge && isFullscreen && (
-                <div className="fixed top-5 right-5 z-50">
+                <div className="fixed top-24 right-5 z-50">
                     <button
                         onClick={showExitConfirmation}
                         className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-lg flex items-center"
@@ -1324,23 +1432,16 @@ function Challenges() {
             {showExitDialog && (
                 <ExitFullscreenDialog
                     onStay={() => {
-                        console.log("User chose to stay in challenge");
                         setShowExitDialog(false);
-                        reenterFullscreenWithoutReset(); // Use the new function instead of enterFullscreen()
+                        reenterFullscreenWithoutReset();
                     }}
                     onExit={() => {
-                        console.log("User chose to exit challenge");
-                        // Mark challenge as attempted
                         markChallengeAsAttempted(selectedChallenge.id);
-
-                        // Close dialog first
                         setShowExitDialog(false);
-
-                        // Exit fullscreen and navigate to HOME page
                         setTimeout(() => {
                             setIsSubmitting(true);
                             exitFullscreen();
-                            navigate('/home'); // Redirect to home page
+                            navigate('/home');
                         }, 100);
                     }}
                 />
@@ -1350,7 +1451,7 @@ function Challenges() {
                 <div className="fixed bottom-5 right-5 z-50">
                     <button
                         onClick={enterFullscreen}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full shadow-lg flex items-center"
+                        className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded-full shadow-lg flex items-center"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z" clipRule="evenodd" />
@@ -1359,11 +1460,18 @@ function Challenges() {
                     </button>
                 </div>
             )}
-            {/* Header */}
-            <header className="bg-gradient-to-r from-indigo-600 to-blue-500 shadow-md">
-                <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                    <Link to="/home" className="text-2xl font-bold text-white flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mr-2" viewBox="0 0 20 20" fill="currentColor">
+
+            {/* Header with glowing effect like in Home page - updated to yellow theme */}
+            <header className="relative overflow-hidden">
+                <div className="absolute inset-0 z-0">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full opacity-10 bg-yellow-600 blur-[80px]"></div>
+                    <div className="absolute bottom-0 left-1/4 w-[600px] h-[300px] rounded-full opacity-10 bg-yellow-600 blur-[80px]"></div>
+                    <div className="absolute top-1/4 right-1/4 w-[400px] h-[300px] rounded-full opacity-10 bg-yellow-600 blur-[80px]"></div>
+                </div>
+
+                <div className="relative z-10 max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                    <Link to="/home" className="text-2xl font-bold text-yellow-400 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mr-2 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
                         CID CTF Platform
@@ -1372,9 +1480,9 @@ function Challenges() {
                     <div className="flex items-center space-x-4">
                         {/* Tab Switch Counter - Always show when a challenge is selected */}
                         {selectedChallenge && (
-                            <div className="flex items-center text-white bg-red-500/80 backdrop-blur-sm px-4 py-1.5 rounded-lg border border-red-400/30">
-                                <span className="mr-2 font-medium">Tab Switches:</span>
-                                <span className="px-3 py-0.5 bg-white text-red-800 text-sm font-bold rounded-full">
+                            <div className="flex items-center text-white bg-black/50 backdrop-blur-sm px-4 py-1.5 rounded-lg border border-red-400/30">
+                                <span className="mr-2 font-medium text-red-400">Tab Switches:</span>
+                                <span className="px-3 py-0.5 bg-red-500 text-white text-sm font-bold rounded-full">
                                     {tabSwitchCount}
                                 </span>
                             </div>
@@ -1382,9 +1490,9 @@ function Challenges() {
 
                         {/* Score Counter */}
                         {teamData && (
-                            <div className="flex items-center text-white bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-lg border border-white/30">
-                                <span className="mr-2 font-medium">Score:</span>
-                                <span className="px-3 py-0.5 bg-white text-indigo-800 text-sm font-bold rounded-full">
+                            <div className="flex items-center text-white bg-black/50 backdrop-blur-sm px-4 py-1.5 rounded-lg border border-yellow-400/30">
+                                <span className="mr-2 font-medium text-yellow-400">Score:</span>
+                                <span className="px-3 py-0.5 bg-yellow-400 text-black text-sm font-bold rounded-full">
                                     {teamData.score || 0}
                                 </span>
                             </div>
@@ -1393,13 +1501,13 @@ function Challenges() {
                 </div>
             </header>
 
-            <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <main className="relative z-10 max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
                 <div className="mb-6 flex items-center justify-between">
-                    <h1 className="text-3xl font-bold text-gray-900">
-                        Challenge {currentChallengeIndex + 1}
+                    <h1 className="text-3xl font-bold text-yellow-400 tracking-wider">
+                        {selectedChallenge ? `CASE FILE #${currentChallengeIndex + 1}` : "INVESTIGATION FILES"}
                         {selectedChallenge && (
-                            <span className="ml-2 text-sm text-red-500">
-                                (Fullscreen Mode - Tab switches are being counted)
+                            <span className="ml-2 text-sm text-red-400">
+                                (FULLSCREEN MODE - TAB SWITCHES MONITORED)
                             </span>
                         )}
                     </h1>
@@ -1407,47 +1515,29 @@ function Challenges() {
                         {!selectedChallenge && (
                             <Link
                                 to="/home"
-                                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                className="inline-flex items-center px-4 py-2 border border-yellow-400 text-sm font-medium rounded-md shadow-sm text-black bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400"
                             >
-                                Back to Home
+                                Return to HQ
                             </Link>
                         )}
                     </div>
                 </div>
 
-                {/* Security Warning */}
-                {selectedChallenge && (
-                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-6">
-                        <div className="flex">
-                            <div className="flex-shrink-0">
-                                <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                </svg>
-                            </div>
-                            <div className="ml-3">
-                                <p className="text-sm text-yellow-700">
-                                    <strong>Warning:</strong> You can only attempt this challenge once. If you exit fullscreen mode, switch tabs, or navigate away, it will count against you.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
                 {/* Progress Indicator */}
-                <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
+                <div className="bg-black/30 backdrop-blur-sm p-4 rounded-lg shadow-sm mb-6 border border-yellow-400/20">
                     <div className="flex justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-700">Your Progress</span>
-                        <span className="text-sm font-medium text-indigo-600">
-                            {teamData?.solvedChallenges?.length || 0} / {challenges.length} solved
+                        <span className="text-sm font-medium text-yellow-200">INVESTIGATION PROGRESS</span>
+                        <span className="text-sm font-medium text-yellow-300">
+                            {teamData?.solvedChallenges?.length || 0} / {challenges.length} SOLVED
                         </span>
                     </div>
                     <div className="relative pt-1">
-                        <div className="overflow-hidden h-2 text-xs flex rounded bg-indigo-100">
+                        <div className="overflow-hidden h-2 text-xs flex rounded bg-black/50">
                             <div
                                 style={{
                                     width: `${((teamData?.solvedChallenges?.length || 0) * 100) / challenges.length}%`
                                 }}
-                                className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-500"
+                                className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-yellow-500"
                             ></div>
                         </div>
                     </div>
@@ -1455,16 +1545,16 @@ function Challenges() {
 
                 {/* Current Challenge */}
                 {selectedChallenge && (
-                    <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100">
+                    <div className="bg-black/30 backdrop-blur-sm shadow-lg rounded-xl overflow-hidden border border-yellow-400/20">
                         {/* Challenge header */}
-                        <div className="bg-gradient-to-r from-indigo-600 to-blue-500 px-6 py-4">
+                        <div className="bg-gradient-to-r from-yellow-600 to-yellow-800 px-6 py-4">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-2xl font-bold text-white">{selectedChallenge.title}</h2>
                                 <div className="flex items-center space-x-2">
-                                    <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-lg text-white font-medium">
+                                    <span className="bg-black/30 backdrop-blur-sm px-3 py-1 rounded-lg text-yellow-300 font-medium">
                                         {selectedChallenge.points} pts
                                     </span>
-                                    <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-lg text-white font-medium">
+                                    <span className="bg-black/30 backdrop-blur-sm px-3 py-1 rounded-lg text-yellow-300 font-medium">
                                         {selectedChallenge.category}
                                     </span>
                                 </div>
@@ -1473,134 +1563,141 @@ function Challenges() {
 
                         {/* Challenge content */}
                         <div className="p-6">
-                            <div className="prose max-w-none mb-8">
-                                <p className="text-gray-700">{selectedChallenge.description}</p>
+                            {/* Description at the top */}
+                            <div className="prose max-w-none mb-8 text-gray-300">
+                                <p>{selectedChallenge.description}</p>
                             </div>
 
-                            {selectedChallenge.imageUrl && (
-                                <div className="mt-6 mb-8 flex justify-center">
-                                    <img
-                                        src={selectedChallenge.imageUrl}
-                                        alt={selectedChallenge.title}
-                                        className="max-w-full rounded-lg border border-gray-200 shadow-sm"
-                                        style={{ maxHeight: '400px' }}
-                                    />
-                                </div>
-                            )}
-
-                            {/* Hint with collapsible display */}
-                            {selectedChallenge.hint && (
-                                <div className="mt-6">
-                                    <details className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
-                                        <summary className="font-medium text-blue-700 cursor-pointer">
-                                            Show Hint
-                                        </summary>
-                                        <div className="mt-2">
-                                            <p className="text-sm text-blue-700">
-                                                {selectedChallenge.hint}
-                                            </p>
-                                        </div>
-                                    </details>
-                                </div>
-                            )}
-
-                            {/* Check if challenge is already solved */}
-                            {teamData?.solvedChallenges?.includes(selectedChallenge.id) ? (
-                                <div className="mt-6 bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
-                                    <div className="flex items-center">
-                                        <svg className="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                        </svg>
-                                        <p className="text-green-700 font-medium">
-                                            You've already solved this challenge!
-                                        </p>
+                            {/* Two-column layout for image and interaction elements */}
+                            <div className="flex flex-col md:flex-row gap-6">
+                                {/* Left column: Image (if exists) */}
+                                {selectedChallenge.imageUrl && (
+                                    <div className="md:w-1/2 flex items-start justify-center">
+                                        <img
+                                            src={selectedChallenge.imageUrl}
+                                            alt={selectedChallenge.title}
+                                            className="rounded-lg border border-yellow-400/20 shadow-sm"
+                                            style={{ maxHeight: '400px', objectFit: 'contain' }}
+                                        />
                                     </div>
+                                )}
 
-                                    {/* Show button to next unsolved challenge if available */}
-                                    {currentChallengeIndex < challenges.length - 1 && isChallengeAccessible(currentChallengeIndex + 1, teamData.solvedChallenges, challenges) && (
-                                        <div className="mt-3 flex justify-end">
-                                            <button
-                                                onClick={() => navigateToChallenge(currentChallengeIndex + 1)}
-                                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                            >
-                                                Go to Next Challenge
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="ml-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                                                </svg>
-                                            </button>
+                                {/* Right column: Hint and Submit form */}
+                                <div className={`${selectedChallenge.imageUrl ? 'md:w-1/2' : 'w-full'}`}>
+                                    {/* Hint with collapsible display */}
+                                    {selectedChallenge.hint && (
+                                        <div className="mb-6">
+                                            <details className="bg-black/40 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                                                <summary className="font-medium text-yellow-300 cursor-pointer">
+                                                    CID INTEL BRIEFING
+                                                </summary>
+                                                <div className="mt-2">
+                                                    <p className="text-sm text-yellow-200">
+                                                        {selectedChallenge.hint}
+                                                    </p>
+                                                </div>
+                                            </details>
                                         </div>
                                     )}
-                                </div>
-                            ) : (
-                                /* Flag submission form */
-                                <div className="mt-8">
-                                    <h3 className="font-medium text-gray-900">Submit Flag</h3>
-                                    <form onSubmit={handleSubmitFlag} className="mt-3">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="text"
-                                                value={flagSubmission}
-                                                onChange={e => setFlagSubmission(e.target.value)}
-                                                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                                placeholder="Enter flag (e.g. CTF{...})"
-                                                required
-                                                disabled={submitLoading}
-                                            />
-                                            <button
-                                                type="submit"
-                                                className={`ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${submitLoading ? "bg-gray-400" : "bg-indigo-600 hover:bg-indigo-700"
-                                                    } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                                                disabled={submitLoading}
-                                            >
-                                                {submitLoading ? (
-                                                    <>
-                                                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+
+                                    {/* Check if challenge is already solved */}
+                                    {teamData?.solvedChallenges?.includes(selectedChallenge.id) ? (
+                                        <div className="bg-black/40 border-l-4 border-green-400 p-4 rounded-r-lg">
+                                            <div className="flex items-center">
+                                                <svg className="h-5 w-5 text-green-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                </svg>
+                                                <p className="text-green-300 font-medium">
+                                                    EVIDENCE COLLECTED - CASE FILE CLOSED
+                                                </p>
+                                            </div>
+
+                                            {/* Show button to next unsolved challenge if available */}
+                                            {currentChallengeIndex < challenges.length - 1 && isChallengeAccessible(currentChallengeIndex + 1, teamData.solvedChallenges, challenges) && (
+                                                <div className="mt-3 flex justify-end">
+                                                    <button
+                                                        onClick={() => navigateToChallenge(currentChallengeIndex + 1)}
+                                                        className="inline-flex items-center px-4 py-2 border border-yellow-400 text-sm font-medium rounded-md shadow-sm text-black bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400"
+                                                    >
+                                                        NEXT CASE FILE
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="ml-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
                                                         </svg>
-                                                        Verifying...
-                                                    </>
-                                                ) : (
-                                                    "Submit Flag"
-                                                )}
-                                            </button>
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
-                                    </form>
+                                    ) : (
+                                        <div>
+                                            <h3 className="font-medium text-yellow-400 mb-3">SUBMIT EVIDENCE</h3>
+                                            <form onSubmit={handleSubmitFlag}>
+                                                <div className="flex items-center">
+                                                    <input
+                                                        type="text"
+                                                        value={flagSubmission}
+                                                        onChange={e => setFlagSubmission(e.target.value)}
+                                                        className="shadow-sm focus:ring-yellow-500 focus:border-yellow-500 block w-full bg-black/70 border border-yellow-400/30 text-white rounded-md py-4 px-3"
+                                                        placeholder="Enter flag (e.g. CTF{...})"
+                                                        required
+                                                        disabled={submitLoading}
+                                                    />
+                                                    <button
+                                                        type="submit"
+                                                        className={`ml-3 inline-flex items-center px-4 py-4 border border-transparent text-sm font-medium rounded-md shadow-sm ${submitLoading ? "bg-gray-600 text-gray-300" : "bg-yellow-400 hover:bg-yellow-500 text-black"
+                                                            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400`}
+                                                        disabled={submitLoading}
+                                                    >
+                                                        {submitLoading ? (
+                                                            <>
+                                                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                                </svg>
+                                                                PROCESSING...
+                                                            </>
+                                                        ) : (
+                                                            "SUBMIT EVIDENCE"
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            </form>
 
-                                    {submitResult && (
-                                        <div className={`mt-3 p-3 rounded-md ${submitResult.success ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
-                                            <p className={`text-sm flex items-center ${submitResult.success ? 'text-green-700' : 'text-red-700'}`}>
-                                                {submitResult.success ? (
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                                    </svg>
-                                                ) : (
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                                    </svg>
-                                                )}
-                                                {submitResult.message}
-                                            </p>
+                                            {submitResult && (
+                                                <div className={`mt-3 p-3 rounded-md ${submitResult.success ? 'bg-green-900/30 border border-green-500/30' : 'bg-red-900/30 border border-red-500/30'}`}>
+                                                    <p className={`text-sm flex items-center ${submitResult.success ? 'text-green-300' : 'text-red-300'}`}>
+                                                        {submitResult.success ? (
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                            </svg>
+                                                        ) : (
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                                            </svg>
+                                                        )}
+                                                        {submitResult.message}
+                                                    </p>
 
-                                            {/* Only show redirecting message if it contains "Redirecting" AND is not a custom group message */}
-                                            {submitResult.success && submitResult.message.includes("Redirecting") && !submitResult.isCustomGroupMessage && (
-                                                <div className="mt-2 text-center">
-                                                    <div className="animate-pulse text-sm text-green-500">
-                                                        Redirecting to home page...
-                                                    </div>
+                                                    {/* Only show redirecting message if it contains "Redirecting" AND is not a custom group message */}
+                                                    {submitResult.success && submitResult.message.includes("Redirecting") && !submitResult.isCustomGroupMessage && (
+                                                        <div className="mt-2 text-center">
+                                                            <div className="animate-pulse text-sm text-green-400">
+                                                                REDIRECTING TO HEADQUARTERS...
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
                                     )}
                                 </div>
-                            )}
+                            </div>
                         </div>
                     </div>
                 )}
 
                 {/* Challenge Navigation - only show solved challenges */}
                 <div className="mt-8">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Challenge Progress</h3>
+                    <h3 className="text-lg font-medium text-yellow-400 mb-4">CASE FILES</h3>
                     <div className="flex flex-wrap gap-2">
                         {challenges.map((challenge, index) => {
                             const isSolved = teamData?.solvedChallenges?.includes(challenge.id);
@@ -1614,27 +1711,27 @@ function Challenges() {
                                     onClick={() => isAccessible && !isAttempted ? navigateToChallenge(index) : null}
                                     disabled={!isAccessible || isAttempted}
                                     className={`w-10 h-10 flex items-center justify-center rounded-full font-medium text-sm
-                                        ${isCurrent ? 'ring-2 ring-offset-2 ring-indigo-500 ' : ''}
-                                        ${isSolved
-                                            ? 'bg-green-100 text-green-800 border border-green-300'
+                        ${isCurrent ? 'ring-2 ring-offset-2 ring-yellow-400 ' : ''}
+                        ${isSolved
+                                            ? 'bg-green-900/50 text-green-300 border border-green-500/50'
                                             : isAttempted
-                                                ? 'bg-red-100 text-red-800 border border-red-300 cursor-not-allowed'
+                                                ? 'bg-red-900/50 text-red-300 border border-red-500/50 cursor-not-allowed'
                                                 : isAccessible
-                                                    ? 'bg-indigo-100 text-indigo-800 border border-indigo-300 hover:bg-indigo-200'
-                                                    : 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
+                                                    ? 'bg-black/50 text-yellow-300 border border-yellow-500/50 hover:bg-yellow-800/30'
+                                                    : 'bg-black/50 text-gray-500 border border-gray-700/50 cursor-not-allowed'
                                         }`}
                                     title={isAccessible
                                         ? isAttempted
-                                            ? "Already attempted"
+                                            ? "FILE COMPROMISED"
                                             : challenge.title
-                                        : "Locked Challenge"}
+                                        : "CLASSIFIED - ACCESS DENIED"}
                                 >
                                     {isSolved ? (
-                                        <svg className="h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <svg className="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                         </svg>
                                     ) : isAttempted ? (
-                                        <svg className="h-4 w-4 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <svg className="h-4 w-4 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                                         </svg>
                                     ) : isAccessible ? (
@@ -1647,6 +1744,16 @@ function Challenges() {
                                 </button>
                             );
                         })}
+                    </div>
+
+                    {/* Police tape decoration at bottom */}
+                    <div className="mt-10 relative overflow-hidden py-4">
+                        <div className="cid-ribbon-small" style={{
+                            background: 'repeating-linear-gradient(45deg, yellow, yellow 10px, black 10px, black 20px)',
+                            height: '15px',
+                            width: '100%',
+                            opacity: 0.8
+                        }}></div>
                     </div>
                 </div>
             </main>

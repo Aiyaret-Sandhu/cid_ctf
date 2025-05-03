@@ -275,7 +275,7 @@ const Leaderboard = () => {
                                                     onClick={() => openTeamDetails(team)}
                                                 >
                                                     <div className="flex items-center">
-                                                        <div className="relative mr-3">
+                                                        {/* <div className="relative mr-3">
                                                             <img
                                                                 src={getTeamAvatar(team)}
                                                                 alt={team.name}
@@ -286,7 +286,7 @@ const Leaderboard = () => {
                                                                 }}
                                                             />
                                                             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border border-black"></div>
-                                                        </div>
+                                                        </div> */}
                                                         <div>
                                                             <div className="font-bold">{team.name}</div>
                                                             <div className="text-xs text-gray-400">Leader: {team.leader.name}</div>
@@ -320,7 +320,7 @@ const Leaderboard = () => {
                                 <span>CONFIDENTIAL</span>
                             </div>
                             <div className="text-center">
-                                <div className="text-yellow-400">🕵️‍♂️ CASE OFFICER: DIRECTOR SMITH</div>
+                                <div className="text-yellow-400">🕵️‍♂️ CASE OFFICER: OSC HQ</div>
                                 <div className="text-gray-400">LAST UPDATED: {new Date().toLocaleDateString()}</div>
                             </div>
                             <div className="flex items-center">

@@ -373,7 +373,7 @@ function Home() {
                             </div>
                             <div>
                                 <span className="text-2xl font-black tracking-tight">CID CTF</span>
-                                <div className="text-xs font-mono text-yellow-500 -mt-1">Criminal Investigation Division</div>
+                                <div className="text-xs font-mono text-yellow-500 -mt-1">Cipher Investigate Decrypt</div>
                             </div>
                         </Link>
                         <div className="flex items-center">

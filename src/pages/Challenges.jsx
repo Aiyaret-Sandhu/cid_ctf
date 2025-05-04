@@ -1016,7 +1016,17 @@ function Challenges() {
     // Improved submit function with proper event handling
     const handleSubmitFlag = async (e) => {
         if (e) e.preventDefault();
-        if (!selectedChallenge || !flagSubmission.trim()) return;
+        if (!selectedChallenge) return;
+
+        const cleanedFlag = flagSubmission.trim().toLowerCase().replace(/\s+/g, '');
+
+        if (!cleanedFlag) {
+            setSubmitResult({
+                success: false,
+                message: "Please enter a valid flag."
+            });
+            return;
+        }
 
         // Check if event has ended
         if (eventStatus === 'ended') {
@@ -1046,7 +1056,7 @@ function Challenges() {
             }
 
             // Flag verification code
-            const flagMatches = await bcrypt.compare(flagSubmission.trim(), selectedChallenge.flagHash);
+            const flagMatches = await bcrypt.compare(cleanedFlag, selectedChallenge.flagHash);
 
             if (flagMatches) {
                 // Flag is correct! Update team's solved challenges and score

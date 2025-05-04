@@ -222,6 +222,61 @@ const Settings = memo(({ loading, setLoading }) => {
               </div>
             </div>
 
+            // Add this new section before the closing div of the form (look for the submit button and add before it)
+
+            <div className="mt-8 border-t pt-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Challenge Completion Message Groups</h3>
+              <p className="text-sm text-gray-500 mb-4">
+                Configure messages that will be shown to teams when they complete all challenges.
+                Teams will be assigned to groups in sequence based on their completion order.
+              </p>
+
+              <div className="grid grid-cols-1 gap-4 mb-4">
+                <div>
+                  <label htmlFor="groupCount" className="block text-sm font-medium text-gray-700">
+                    Number of Message Groups
+                  </label>
+                  <select
+                    id="groupCount"
+                    name="groupCount"
+                    value={formData.groupCount || "4"}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  >
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                  </select>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Teams will cycle through these messages in order of completion. For example, with 4 groups, the 5th team to finish will get message 1.
+                  </p>
+                </div>
+              </div>
+
+              {/* Generate message inputs based on group count */}
+              {Array.from({ length: parseInt(formData.groupCount || 4) }).map((_, index) => (
+                <div key={index} className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <label htmlFor={`groupMessage${index + 1}`} className="block text-sm font-medium text-gray-700 mb-2">
+                    Group {index + 1} Message
+                  </label>
+                  <textarea
+                    id={`groupMessage${index + 1}`}
+                    name={`groupMessage${index + 1}`}
+                    rows="3"
+                    value={formData[`groupMessage${index + 1}`] || ""}
+                    onChange={handleInputChange}
+                    placeholder={`Message for teams assigned to group ${index + 1}`}
+                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    {`Teams ${index + 1}, ${parseInt(formData.groupCount) + index + 1}, ${parseInt(formData.groupCount) * 2 + index + 1}, etc., to complete all challenges will see this message.`}
+                  </p>
+                </div>
+              ))}
+            </div>
+
             <div className="mt-6">
               <h3 className="text-lg font-medium text-gray-700 mb-2">Team Grouping for Final Message</h3>
               <p className="text-sm text-gray-500 mb-4">

@@ -932,52 +932,52 @@ function Challenges() {
     };
 
     // Add this effect near your other useEffects
-    useEffect(() => {
-        const checkFinalistStatus = async () => {
-            if (!teamData || !challenges.length) return;
+    // useEffect(() => {
+    //     const checkFinalistStatus = async () => {
+    //         if (!teamData || !challenges.length) return;
 
-            try {
-                // Get finalist count
-                const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
-                if (settingsDoc.exists()) {
-                    const settingsData = settingsDoc.data();
-                    const finalistCount = settingsData.finalistCount || 1;
+    //         try {
+    //             // Get finalist count
+    //             const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
+    //             if (settingsDoc.exists()) {
+    //                 const settingsData = settingsDoc.data();
+    //                 const finalistCount = settingsData.finalistCount || 1;
 
-                    // Check completed teams
-                    const teamsRef = collection(db, "teams");
-                    const teamsSnapshot = await getDocs(teamsRef);
+    //                 // Check completed teams
+    //                 const teamsRef = collection(db, "teams");
+    //                 const teamsSnapshot = await getDocs(teamsRef);
 
-                    // Get teams that have finished all challenges
-                    const completedTeams = teamsSnapshot.docs
-                        .filter(doc => {
-                            const team = doc.data();
-                            return team.solvedChallenges?.length >= challenges.length;
-                        })
-                        .map(doc => ({ id: doc.id, ...doc.data() }));
+    //                 // Get teams that have finished all challenges
+    //                 const completedTeams = teamsSnapshot.docs
+    //                     .filter(doc => {
+    //                         const team = doc.data();
+    //                         return team.solvedChallenges?.length >= challenges.length;
+    //                     })
+    //                     .map(doc => ({ id: doc.id, ...doc.data() }));
 
-                    // console.log("Completed teams:", completedTeams.length, "Finalist count:", finalistCount);
-                    // console.log("Current team is finalist:", completedTeams.some(team => team.id === teamData.id));
+    //                 // console.log("Completed teams:", completedTeams.length, "Finalist count:", finalistCount);
+    //                 // console.log("Current team is finalist:", completedTeams.some(team => team.id === teamData.id));
 
-                    // If enough teams have finished and this team isn't among them, redirect
-                    if (completedTeams.length >= finalistCount &&
-                        !completedTeams.some(team => team.id === teamData.id)) {
-                        setSubmitResult({
-                            success: false,
-                            message: "The competition has been completed by other teams."
-                        });
+    //                 // If enough teams have finished and this team isn't among them, redirect
+    //                 // if (completedTeams.length >= finalistCount &&
+    //                 //     !completedTeams.some(team => team.id === teamData.id)) {
+    //                 //     setSubmitResult({
+    //                 //         success: false,
+    //                 //         message: "The competition has been completed by other teams."
+    //                 //     });
 
-                        setTimeout(() => {
-                            navigate('/home');
-                        }, 6000);
-                    }
-                }
-            } catch (error) {
-                console.error("Error checking finalist status:", error);
-            }
-        };
+    //                 //     setTimeout(() => {
+    //                 //         navigate('/home');
+    //                 //     }, 6000);
+    //                 // }
+    //             }
+    //         } catch (error) {
+    //             console.error("Error checking finalist status:", error);
+    //         }
+    //     };
 
-        checkFinalistStatus();
-    }, [teamData, challenges, navigate]);
+    //     checkFinalistStatus();
+    // }, [teamData, challenges, navigate]);
 
     // Modified submit function to include tab switch information
 
@@ -1087,6 +1087,7 @@ function Challenges() {
                         [...solvedChallenges, selectedChallenge.id].includes(challenge.id)
                     );
 
+                    // Modify the flag submission handler around line ~1090 (in the flag match success section)
                     if (allSolved) {
                         try {
                             // Update team's completedAt time if it doesn't exist yet
@@ -1096,89 +1097,31 @@ function Challenges() {
                                 });
                             }
 
-                            // Get settings to check if team grouping is enabled
-                            const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
-                            const settingsData = settingsDoc.exists() ? settingsDoc.data() : {};
-
-                            if (settingsData.enableTeamGrouping) {
-                                // Fetch all teams
-                                const teamsRef = collection(db, "teams");
-                                const teamsSnapshot = await getDocs(teamsRef);
-
-                                // Get teams list - sort alphabetically for consistent grouping
-                                const teamsList = teamsSnapshot.docs
-                                    .map(doc => ({
-                                        id: doc.id,
-                                        ...doc.data()
-                                    }))
-                                    .sort((a, b) => a.name.localeCompare(b.name));
-
-                                // Get total number of teams
-                                const totalTeams = teamsList.length;
-
-                                // Calculate group size - divide teams equally
-                                const groupCount = parseInt(settingsData.groupCount || 2);
-                                const teamsPerGroup = Math.ceil(totalTeams / groupCount);
-
-                                // Find this team's index in the alphabetically sorted teams array
-                                const teamIndex = teamsList.findIndex(t => t.id === teamData.id);
-
-                                if (teamIndex >= 0) {
-                                    // Calculate which group this team belongs to
-                                    const groupIndex = Math.min(Math.floor(teamIndex / teamsPerGroup), groupCount - 1);
-
-                                    // Get the appropriate message
-                                    const messageKey = `groupMessage${groupIndex + 1}`;
-                                    const groupMessage = settingsData[messageKey] ||
-                                        "Congratulations! You've completed all challenges.";
-
-                                    // console.log(`Team in group ${groupIndex + 1}, showing message: ${groupMessage}`);
-
-                                    setSubmitResult({
-                                        success: true,
-                                        message: groupMessage,
-                                        isCustomGroupMessage: true
-                                    });
-
-                                    // Don't redirect automatically for custom group messages
-                                    setAllCompleted(true);
-                                    return;
-                                }
-                            }
-
-                            // Default message if team grouping is disabled or there was an error
+                            // Success message
                             setSubmitResult({
                                 success: true,
-                                message: "Congratulations! You've completed all challenges. Redirecting to home page..."
+                                message: "Congratulations! You've completed all challenges. Redirecting to message page..."
                             });
-                            setAllCompleted(true);
 
-                            // Redirect to home after delay
-                            // setTimeout(() => {
-                            //     exitFullscreen();
-                            //     navigate('/home');
-                            // }, 5000);
+                            // Redirect to the matchers page after a delay
+                            setTimeout(() => {
+                                exitFullscreen();
+                                navigate('/matchers');
+                            }, 5000);
+
+                            return;
                         } catch (error) {
                             console.error("Error processing completion:", error);
+                            // Fall back to home on error
                             setSubmitResult({
                                 success: true,
-                                message: "Congratulations! You've completed all challenges. Redirecting to home page..."
+                                message: "Error processing completion. Redirecting to home page..."
                             });
-                            setAllCompleted(true);
                             setTimeout(() => {
                                 exitFullscreen();
                                 navigate('/home');
                             }, 5000);
                         }
-                    } else {
-                        // Handle non-completion case
-                        setSubmitResult({
-                            success: true,
-                            message: `Correct! You've earned ${selectedChallenge.points} points.`
-                        });
-
-                        // Clear the flag input
-                        setFlagSubmission('');
                     }
                 }
             } else {
@@ -1415,7 +1358,7 @@ function Challenges() {
                             Intelligence points accumulated: <span className="font-bold">{teamData?.score || 0}</span>
                         </p>
 
-                        {/* Display the custom group message instead of the default message */}
+                        {/* Display the custom group message instead of the default message
                         {submitResult && submitResult.isCustomGroupMessage ? (
                             <div className="mt-4 text-lg font-medium text-white border-t pt-4 border-yellow-400/30">
                                 {submitResult.message}
@@ -1424,7 +1367,14 @@ function Challenges() {
                             <div className="animate-pulse text-sm text-yellow-400">
                                 Redirecting to headquarters...
                             </div>
-                        )}
+                        )} */}
+
+                        <Link
+                            to="/matchers"
+                            className="inline-flex items-center px-4 py-2 border border-yellow-400 text-sm font-medium rounded-md shadow-sm text-black bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400"
+                        >
+                            Go to Flag verification page
+                        </Link>
 
                         <div className="border-t border-yellow-400/30 mt-6 pt-3 px-6 text-xs text-yellow-400/80 font-mono flex justify-between items-center">
                             <div className="flex items-center">
@@ -1715,7 +1665,7 @@ function Challenges() {
                                                         value={flagSubmission}
                                                         onChange={e => setFlagSubmission(e.target.value)}
                                                         className="shadow-sm focus:ring-yellow-500 focus:border-yellow-500 block w-full bg-black/70 border border-yellow-400/30 text-white rounded-md py-4 px-3"
-                                                        placeholder="Enter flag (e.g. CTF{...})"
+                                                        placeholder="Enter flag"
                                                         required
                                                         disabled={submitLoading}
                                                     />

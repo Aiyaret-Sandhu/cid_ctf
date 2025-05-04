@@ -8,6 +8,8 @@ import TeamManagement from '../components/TeamManagement';
 import Scoreboard from '../components/Scoreboard';
 import Settings from '../components/Settings';
 import ChallengeManagement from '../components/ChallengeManagement';
+import Round1Checker from '../components/Round1Checker';
+import Finalists from '../components/Finalists';
 
 function Admin() {
     const [user, setUser] = useState(null);
@@ -433,6 +435,16 @@ function Admin() {
                             </button>
 
                             <button
+                                onClick={() => setActiveSection('finalists')}
+                                className={`w-full px-4 py-2 text-left text-sm font-medium rounded-md ${activeSection === 'finalists'
+                                    ? 'bg-indigo-100 text-indigo-700'
+                                    : 'text-gray-600 hover:bg-gray-50'
+                                    }`}
+                            >
+                                Phase 2 Finalists
+                            </button>
+
+                            <button
                                 onClick={() => setActiveSection('teams')}
                                 className={`w-full px-4 py-2 text-left text-sm font-medium rounded-md ${activeSection === 'teams'
                                     ? 'bg-indigo-100 text-indigo-700'
@@ -440,6 +452,16 @@ function Admin() {
                                     }`}
                             >
                                 Team Management
+                            </button>
+
+                            <button
+                                onClick={() => setActiveSection('checker')}
+                                className={`w-full px-4 py-2 text-left text-sm font-medium rounded-md ${activeSection === 'checker'
+                                    ? 'bg-indigo-100 text-indigo-700'
+                                    : 'text-gray-600 hover:bg-gray-50'
+                                    }`}
+                            >
+                                Round 1 Checker
                             </button>
 
                             <button
@@ -513,9 +535,17 @@ function Admin() {
                                     <h3 className="text-lg font-medium text-gray-800">System Settings</h3>
                                     <p className="text-sm text-gray-600 mt-1">Configure platform settings</p>
                                 </div>
+
+                                <div onClick={() => setActiveSection('finalists')} className="cursor-pointer border border-gray-200 rounded-md p-6 hover:bg-gray-50 transition-colors">
+                                    <h3 className="text-lg font-medium text-gray-800">Phase 2 Finalists</h3>
+                                    <p className="text-sm text-gray-600 mt-1">View and manage teams verified for the final round</p>
+                                </div>
+
                             </div>
                         </div>
                     )}
+
+                    {activeSection === 'checker' && <Round1Checker user={user} />}
 
                     {/* Team Management */}
                     {activeSection === 'teams' &&
@@ -549,6 +579,8 @@ function Admin() {
                             setLoading={setSettingsLoading}
                         />
                     )}
+
+                    {activeSection === 'finalists' && <Finalists />}
 
                     {activeSection === 'scoreboard' &&
                         <Scoreboard

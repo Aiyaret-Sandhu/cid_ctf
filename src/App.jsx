@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Admin from './pages/Admin';
 import Challenges from './pages/Challenges';
 import Leaderboard from './pages/Leaderboard';
+import Matchers from './pages/Matchers';
 
 
 import { Analytics } from "@vercel/analytics/react"
@@ -85,6 +86,12 @@ function App() {
             <Route path="/leaderboard" element={
               <ProtectedRoute>
                 <Leaderboard />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/matchers" element={
+              <ProtectedRoute>
+                <Matchers />
               </ProtectedRoute>
             } />
             

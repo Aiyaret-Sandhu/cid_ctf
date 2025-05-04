@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, query, where, orderBy, doc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, orderBy, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
 const Finalists = () => {

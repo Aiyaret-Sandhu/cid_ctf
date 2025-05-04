@@ -258,7 +258,7 @@ function Challenges() {
                 document.mozFullScreenElement ||
                 document.msFullscreenElement;
 
-            console.log("Fullscreen state changed:", isCurrentlyFullscreen ? "in fullscreen" : "exiting fullscreen");
+            // console.log("Fullscreen state changed:", isCurrentlyFullscreen ? "in fullscreen" : "exiting fullscreen");
 
             // If we're exiting fullscreen unexpectedly (via ESC key)
             if (!isCurrentlyFullscreen && isFullscreen && selectedChallenge && !escKeyProcessing) {
@@ -456,7 +456,7 @@ function Challenges() {
                     }
                 });
 
-                console.log("Challenge marked as attempted:", challengeId);
+                // console.log("Challenge marked as attempted:", challengeId);
             } catch (error) {
                 console.error("Error marking challenge as attempted:", error);
             }
@@ -660,10 +660,10 @@ function Challenges() {
         const checkEventStatus = async () => {
             try {
                 const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
-                console.log("Settings document exists:", settingsDoc.exists());
+                // console.log("Settings document exists:", settingsDoc.exists());
                 if (settingsDoc.exists()) {
                     const data = settingsDoc.data();
-                    console.log("Settings data:", data);
+                    // console.log("Settings data:", data);
                     setEventStatus(data.eventStatus);
 
                     // If event has ended, redirect to home
@@ -877,8 +877,8 @@ function Challenges() {
                         })
                         .map(doc => ({ id: doc.id, ...doc.data() }));
 
-                    console.log("Completed teams:", completedTeams.length, "Finalist count:", finalistCount);
-                    console.log("Current team is finalist:", completedTeams.some(team => team.id === teamData.id));
+                    // console.log("Completed teams:", completedTeams.length, "Finalist count:", finalistCount);
+                    // console.log("Current team is finalist:", completedTeams.some(team => team.id === teamData.id));
 
                     // If enough teams have finished and this team isn't among them, redirect
                     if (completedTeams.length >= finalistCount &&
@@ -1054,7 +1054,7 @@ function Challenges() {
                                     const groupMessage = settingsData[messageKey] ||
                                         "Congratulations! You've completed all challenges.";
 
-                                    console.log(`Team in group ${groupIndex + 1}, showing message: ${groupMessage}`);
+                                    // console.log(`Team in group ${groupIndex + 1}, showing message: ${groupMessage}`);
 
                                     setSubmitResult({
                                         success: true,

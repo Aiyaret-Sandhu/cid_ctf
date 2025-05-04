@@ -171,7 +171,7 @@ function Home() {
             }));
 
             setChallenges(challengesList);
-            console.log("Challenges loaded:", challengesList.length);
+            // console.log("Challenges loaded:", challengesList.length);
         } catch (error) {
             console.error("Error fetching challenges:", error);
         }
@@ -213,8 +213,8 @@ function Home() {
                 return 0; // If no completion time, keep order
             });
 
-            console.log("Teams loaded for leaderboard:", sortedTeams.length);
-            console.log(sortedTeams);
+            // console.log("Teams loaded for leaderboard:", sortedTeams.length);
+            // console.log(sortedTeams);
             setAllTeams(sortedTeams);
         } catch (error) {
             console.error("Error fetching leaderboard data:", error);
@@ -900,7 +900,7 @@ function Home() {
                             <span className="font-mono text-yellow-400 text-sm">CID CTF::PLATFORM</span>
                         </div>
                         <p className="text-sm text-yellow-700 font-mono">
-                            &copy; {new Date().getFullYear()} CID CTF Platform. All rights reserved.
+                            &copy; Open Source Chandigarh. All rights reserved.
                         </p>
                     </div>
                 </div>

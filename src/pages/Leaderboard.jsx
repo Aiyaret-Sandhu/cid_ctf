@@ -250,7 +250,7 @@ const Leaderboard = () => {
                                         <tr className="bg-zinc-800/80 text-yellow-400 text-sm border-b border-yellow-400/20">
                                             <th className="px-6 py-3 border-r border-yellow-400/20">CASE #</th>
                                             <th className="px-6 py-3 border-r border-yellow-400/20">OPERATIVE TEAM</th>
-                                            <th className="px-6 py-3 border-r border-yellow-400/20">ID CODE</th>
+                                            {/* <th className="px-6 py-3 border-r border-yellow-400/20">ID CODE</th> */}
                                             <th className="px-6 py-3">THREAT NEUTRALIZED</th>
                                         </tr>
                                     </thead>
@@ -293,9 +293,9 @@ const Leaderboard = () => {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 border-r border-yellow-400/10 group-hover:text-yellow-300 text-yellow-400/80">
+                                                {/* <td className="px-6 py-4 border-r border-yellow-400/10 group-hover:text-yellow-300 text-yellow-400/80">
                                                     <span className="bg-black/50 px-2 py-1 rounded">#{team.id}</span>
-                                                </td>
+                                                </td> */}
                                                 <td className="px-6 py-4 group-hover:text-green-300">
                                                     <div className="flex items-center">
                                                         <span className="text-green-400 font-bold mr-2 whitespace-nowrap">🧠 {team.volume}</span>

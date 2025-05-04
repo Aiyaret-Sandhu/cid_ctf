@@ -203,7 +203,7 @@ function Login() {
             <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
             <div className="w-3 h-3 rounded-full bg-green-500"></div>
           </div>
-          <div className="text-xs text-yellow-400/70 mx-auto font-mono">CID Secure Terminal</div>
+          <div className="text-xs text-yellow-400/70 mx-auto font-mono">Cipher Investigate Decrypt</div>
         </div>
         
         <div className="mt-8">
@@ -270,7 +270,7 @@ function Login() {
           <div className="mt-8 text-center text-xs text-yellow-400/50">
             <div className="flex flex-col items-center space-y-2">
               <p>
-                This portal is protected by CID Intelligence Division.
+                This portal is protected by Open Source Chandigarh.
               </p>
               <p>
                 Unauthorized access attempts will be prosecuted to the full extent of the law.
@@ -287,7 +287,8 @@ function Login() {
                 <div className="h-1 w-1 bg-yellow-500 rounded-full mr-1 animate-ping"></div>
                 <div className="h-1 w-1 bg-yellow-500 rounded-full mr-1"></div>
                 <span className="text-yellow-400">
-                  © {new Date().getFullYear()} Cipher Investigate Decrypt. All rights reserved.
+                  {/* © {new Date().getFullYear()} Cipher Investigate Decrypt. All rights reserved. */}
+                  Open Source Chandigarh
                 </span>
               </div>
             </div>

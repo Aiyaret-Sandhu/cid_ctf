@@ -1094,12 +1094,12 @@ function Challenges() {
 
                             // First check if the team is already a finalist
                             if (teamData.isFinalist) {
-                                // They are already a finalist, so redirect to the waiting page
+                                console.log("User is already a finalist, redirecting to finalist waiting page");
                                 setSubmitResult({
                                     success: true,
                                     message: "You've already qualified as a finalist. Redirecting..."
                                 });
-
+                                
                                 setTimeout(() => {
                                     exitFullscreen();
                                     navigate('/finalist-waiting');

@@ -549,39 +549,383 @@ function Home() {
                     </div>
                 )}
 
-                {/* Active Challenges Section */}
+
+                {/* Active Challenges or Finalist Status Section */}
                 {eventStatus === 'active' && user && teamData && (
                     <div className="mb-12">
-                        <h2 className="text-2xl font-bold text-yellow-400 mb-6 font-mono tracking-wider flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                            </svg>
-                            ACTIVE CHALLENGES
-                        </h2>
-
-                        <div>
-                            <Link
-                                // Conditionally navigate to finalist waiting page if they're already a finalist
-                                to={teamData.isFinalist ? "/finalist-waiting" : "/challenges"}
-                                className="group bg-black/30 backdrop-blur-sm border border-yellow-400/30 rounded-lg p-6 hover:bg-black/50 transition-all flex items-center justify-between"
-                            >
-                                <div>
-                                    <h3 className="text-xl font-bold text-yellow-400 font-mono mb-2">
-                                        CID Challenge Files
-                                    </h3>
-                                    <p className="text-yellow-100/70">
-                                        {teamData.isFinalist
-                                            ? "You've qualified as a finalist. Check your status."
-                                            : "Access the active challenge files to compete in the CTF"}
-                                    </p>
-                                </div>
-                                <div className="text-yellow-400 group-hover:translate-x-2 transition-transform duration-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        {teamData.isFinalist ? (
+                            // Finalist Status Section - show this instead of Active Challenges
+                            <>
+                                <h2 className="text-2xl font-bold text-green-400 mb-6 font-mono tracking-wider flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                                     </svg>
+                                    FINALIST STATUS
+                                </h2>
+
+                                <Link
+                                    to="/finalist-waiting"
+                                    className="group bg-black/30 backdrop-blur-sm border border-green-400/30 rounded-lg p-6 hover:bg-black/50 transition-all flex items-center justify-between"
+                                >
+                                    <div>
+                                        <h3 className="text-xl font-bold text-green-400 font-mono mb-2">
+                                            Qualified for Phase 2
+                                        </h3>
+                                        <p className="text-green-100/70">
+                                            Your team has successfully qualified as a finalist. View your status and next steps.
+                                        </p>
+                                    </div>
+                                    <div className="text-green-400 group-hover:translate-x-2 transition-transform duration-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                        </svg>
+                                    </div>
+                                </Link>
+                            </>
+                        ) : (
+                            // Original Active Challenges Section
+                            <>
+                                {/* Main Dashboard Area */}
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+                                    {/* Dashboard Side Column for Key Stats */}
+                                    <div className="lg:col-span-1">
+                                        {user && eventStatus === 'active' && teamData && (
+                                            <div className="bg-gray-900 border border-yellow-700/30 rounded-xl p-5 shadow-xl mb-6">
+                                                <h3 className="text-lg font-bold text-yellow-300 mb-4 flex items-center border-b border-yellow-700/30 pb-3 font-mono">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                                                    </svg>
+                                                    INTEL REPORT
+                                                </h3>
+
+                                                <div className="space-y-4">
+                                                    {/* Agent Status */}
+                                                    <div className="bg-black rounded-lg p-3 border border-yellow-700/30">
+                                                        <div className="text-xs text-yellow-500 uppercase tracking-wider mb-1">Agent Status</div>
+                                                        <div className="flex items-center">
+                                                            <div className="h-2 w-2 rounded-full bg-yellow-500 mr-2 animate-pulse"></div>
+                                                            <span className="text-yellow-300 font-medium">Active</span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Team Performance */}
+                                                    <div className="bg-black rounded-lg p-3 border border-yellow-700/30">
+                                                        <div className="text-xs text-yellow-500 uppercase tracking-wider mb-1">Performance</div>
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-yellow-300 font-medium">{calculateTeamProgress().percent}% Complete</span>
+                                                            <span className="text-xs font-mono text-yellow-400">{calculateTeamProgress().solved}/{calculateTeamProgress().total}</span>
+                                                        </div>
+                                                        <div className="w-full bg-gray-800 rounded-full h-2 mt-2">
+                                                            <div
+                                                                className="bg-yellow-500 h-2 rounded-full"
+                                                                style={{ width: `${calculateTeamProgress().percent}%` }}
+                                                            ></div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Score */}
+                                                    <div className="bg-black rounded-lg p-3 border border-yellow-700/30">
+                                                        <div className="text-xs text-yellow-500 uppercase tracking-wider mb-1">Score</div>
+                                                        <div className="flex items-center">
+                                                            <span className="text-2xl font-bold text-yellow-400 font-mono">{teamData.score || 0}</span>
+                                                            <span className="ml-2 text-xs text-yellow-500">points</span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Challenges Completed */}
+                                                    <div className="bg-black rounded-lg p-3 border border-yellow-700/30">
+                                                        <div className="text-xs text-yellow-500 uppercase tracking-wider mb-1">Challenges Completed</div>
+                                                        <div className="flex items-center">
+                                                            <span className="text-2xl font-bold text-yellow-400 font-mono">{calculateTeamProgress().solved}</span>
+                                                            <span className="ml-2 text-xs text-yellow-500">of {calculateTeamProgress().total}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Quick Link for Challenges */}
+                                                <Link to="/challenges" className="mt-4 flex items-center justify-center w-full py-3 bg-yellow-900/60 hover:bg-yellow-800/80 text-yellow-200 rounded-lg border border-yellow-700/50 transition-all shadow-md">
+                                                    <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                                    </svg>
+                                                    View Active Missions
+                                                </Link>
+                                            </div>
+                                        )}
+
+                                        {/* Info Cards - Redesigned for yellow/black theme */}
+                                        <div className="space-y-4">
+                                            <div className="bg-black p-5 rounded-xl border border-yellow-700/30 shadow-xl hover:shadow-yellow-900/10 transition-all duration-300">
+                                                <div className="bg-yellow-900/50 p-2 w-10 h-10 rounded-lg mb-4 flex items-center justify-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                </div>
+                                                <h3 className="text-lg font-semibold text-yellow-200 mb-3">About CID CTF</h3>
+                                                <p className="text-sm text-yellow-100/70 leading-relaxed font-mono">
+                                                    The CID Capture The Flag competition is designed to test your cybersecurity skills in a challenging environment. Compete with other teams to solve security challenges.
+                                                </p>
+                                            </div>
+
+                                            <div className="bg-black p-5 rounded-xl border border-yellow-700/30 shadow-xl hover:shadow-yellow-900/10 transition-all duration-300">
+                                                <div className="bg-yellow-900/50 p-2 w-10 h-10 rounded-lg mb-4 flex items-center justify-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                    </svg>
+                                                </div>
+                                                <h3 className="text-lg font-semibold text-yellow-200 mb-3">Rules of Engagement</h3>
+                                                <ul className="text-sm text-yellow-100/70 list-disc pl-5 space-y-2 font-mono">
+                                                    <li>No attacking the infrastructure</li>
+                                                    <li>No sharing of flags or solutions</li>
+                                                    <li>Be respectful to other participants</li>
+                                                    <li>Any form of cheating = disqualification</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Main Content Area - 2/3 width */}
+                                    <div className="lg:col-span-2">
+                                        {/* Welcome Panel */}
+                                        <div className="bg-gray-900 border border-yellow-700/30 rounded-xl p-6 shadow-xl mb-6 backdrop-blur-sm">
+                                            <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-300 mb-4 font-mono tracking-tight">
+                                                {user ? 'WELCOME BACK, AGENT' : 'CID CYBERSECURITY DIVISION'}
+                                            </h2>
+
+                                            {!user ? (
+                                                <div className="py-6">
+                                                    <div className="flex items-center mb-6">
+                                                        <span className="h-3 w-3 bg-yellow-500 animate-pulse rounded-full mr-2"></span>
+                                                        <p className="text-yellow-300 text-lg font-mono">
+                                                            Authenticate to access classified CTF missions and test your security skills.
+                                                        </p>
+                                                    </div>
+
+                                                    <div className="flex space-x-4">
+                                                        <Link
+                                                            to="/login"
+                                                            className="px-5 py-3 bg-yellow-600 hover:bg-yellow-500 text-black font-medium rounded-lg shadow-lg hover:shadow-yellow-900/50 transition-all duration-300 flex items-center border border-yellow-700"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" />
+                                                            </svg>
+                                                            Login
+                                                        </Link>
+                                                        <Link
+                                                            to="/register"
+                                                            className="px-5 py-3 bg-gray-800 hover:bg-gray-700 text-yellow-200 font-medium rounded-lg shadow-lg hover:shadow-gray-900/30 transition-all duration-300 flex items-center border border-yellow-700/30"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+                                                            </svg>
+                                                            Register
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            ) : eventStatus === 'active' ? (
+                                                <div>
+                                                    <div className="flex items-center mb-6">
+                                                        <span className="h-3 w-3 bg-yellow-500 animate-pulse rounded-full mr-2"></span>
+                                                        <p className="text-yellow-300 font-mono">
+                                                            SECURE CONNECTION ESTABLISHED | SYSTEM ACCESS GRANTED
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Challenge Link Card */}
+                                                    <div className="mb-6">
+                                                        <Link to="/challenges" className="block p-5 bg-gradient-to-r from-yellow-900/50 to-yellow-800/40 rounded-xl border border-yellow-700/30 hover:border-yellow-600/50 transition-all duration-300 hover:shadow-lg group">
+                                                            <div className="flex items-center">
+                                                                <div className="p-3 bg-yellow-800/50 rounded-lg mr-4 group-hover:bg-yellow-700/70 transition-all">
+                                                                    <svg className="h-7 w-7 text-yellow-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                                                    </svg>
+                                                                </div>
+                                                                <div className="flex-1">
+                                                                    <h3 className="text-xl font-semibold text-yellow-300 mb-1 group-hover:text-yellow-200 transition-colors font-mono">
+                                                                        ACCESS CHALLENGES
+                                                                    </h3>
+                                                                    <p className="text-sm text-yellow-400/70 font-mono">
+                                                                        Decrypt, exploit, and solve missions to earn points and climb the ranks
+                                                                    </p>
+                                                                </div>
+                                                                <div className="text-yellow-400 group-hover:translate-x-2 transition-transform duration-300">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                                                    </svg>
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </div>
+
+                                                    {/* All challenges completed message */}
+                                                    {allChallengesCompleted && (
+                                                        <div className="bg-yellow-900/30 border border-yellow-700/50 rounded-lg p-4 mb-8 font-mono">
+                                                            <div className="flex items-center">
+                                                                <div className="flex-shrink-0">
+                                                                    <svg className="h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                                    </svg>
+                                                                </div>
+                                                                <div className="ml-3">
+                                                                    <p className="text-yellow-300">
+                                                                        <span className="font-semibold">MISSION COMPLETE:</span> All challenges successfully neutralized.
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Leaderboard Section */}
+                                                    <div className="mt-8">
+                                                        <div className="flex justify-between items-center mb-4">
+                                                            <h3 className="text-lg font-semibold text-yellow-300 flex items-center font-mono">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                                                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                                                                </svg>
+                                                                FIELD OPERATIONS - TOP AGENTS
+                                                            </h3>
+                                                            <button
+                                                                onClick={fetchLeaderboard}
+                                                                className="flex items-center px-3 py-1.5 bg-yellow-900/50 text-yellow-300 hover:bg-yellow-800/50 rounded-md transition-all text-sm font-medium border border-yellow-700/50"
+                                                                disabled={leaderboardLoading}
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 mr-1.5 ${leaderboardLoading ? 'animate-spin' : ''}`} viewBox="0 0 20 20" fill="currentColor">
+                                                                    <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                                                                </svg>
+                                                                {leaderboardLoading ? 'SYNCING...' : 'SYNC'}
+                                                            </button>
+                                                        </div>
+
+                                                        {leaderboardLoading ? (
+                                                            <div className="flex justify-center py-6 bg-black border border-yellow-700/30 rounded-lg">
+                                                                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-yellow-400"></div>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="overflow-x-auto bg-black rounded-lg border border-yellow-700/30 shadow-lg">
+                                                                <table className="min-w-full divide-y divide-yellow-700/30 font-mono">
+                                                                    <thead className="bg-yellow-900/30">
+                                                                        <tr>
+                                                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-yellow-400 uppercase tracking-wider">
+                                                                                Rank
+                                                                            </th>
+                                                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-yellow-400 uppercase tracking-wider">
+                                                                                Team
+                                                                            </th>
+                                                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-yellow-400 uppercase tracking-wider">
+                                                                                Status
+                                                                            </th>
+                                                                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-yellow-400 uppercase tracking-wider">
+                                                                                Score
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody className="divide-y divide-yellow-700/20">
+                                                                        {allTeams.length > 0 ? allTeams.slice(0, 8).map((team, index) => {
+                                                                            // Special styling for current team
+                                                                            const isCurrentTeam = teamData && team.id === teamData.id;
+
+                                                                            // Different styling for top teams
+                                                                            let rowClass = "transition-colors";
+                                                                            if (isCurrentTeam) rowClass += " bg-yellow-900/30";
+                                                                            else if (index === 0) rowClass += " bg-yellow-800/20"; // 1st
+                                                                            else if (index === 1) rowClass += " bg-yellow-900/10";   // 2nd
+                                                                            else if (index === 2) rowClass += " bg-yellow-900/5"; // 3rd
+
+                                                                            return (
+                                                                                <tr key={team.id} className={rowClass}>
+                                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-yellow-300">
+                                                                                        {index + 1}
+                                                                                        {index < 3 && (
+                                                                                            <span className="ml-1">
+                                                                                                {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
+                                                                                            </span>
+                                                                                        )}
+                                                                                    </td>
+                                                                                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${isCurrentTeam ? "font-bold text-yellow-300" : "text-yellow-200"}`}>
+                                                                                        {team.name}
+                                                                                        {isCurrentTeam && (
+                                                                                            <span className="ml-2 text-xs bg-yellow-900/50 text-yellow-300 px-2 py-0.5 rounded border border-yellow-700/50">YOU</span>
+                                                                                        )}
+                                                                                    </td>
+                                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-yellow-200/70">
+                                                                                        <div className="w-full bg-gray-800 rounded-full h-1.5">
+                                                                                            <div
+                                                                                                className={`${isCurrentTeam ? "bg-yellow-500" : "bg-yellow-700/50"} h-1.5 rounded-full`}
+                                                                                                style={{ width: `${challenges.length > 0 ? ((team.solvedChallenges?.length || 0) / challenges.length) * 100 : 0}%` }}
+                                                                                            ></div>
+                                                                                        </div>
+                                                                                        <span className="text-xs text-yellow-500 mt-1 block">
+                                                                                            {team.solvedChallenges?.length || 0} / {challenges.length}
+                                                                                        </span>
+                                                                                    </td>
+                                                                                    <td className={`px-6 py-4 whitespace-nowrap text-sm text-right ${isCurrentTeam ? "font-bold text-yellow-300" : "font-medium text-yellow-200"}`}>
+                                                                                        {team.score || 0}
+                                                                                    </td>
+                                                                                </tr>
+                                                                            );
+                                                                        }) : (
+                                                                            <tr>
+                                                                                <td colSpan="4" className="px-6 py-4 text-sm text-center text-yellow-500">
+                                                                                    No teams have registered yet
+                                                                                </td>
+                                                                            </tr>
+                                                                        )}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="py-6">
+                                                    {eventStatus === 'not-started' ? (
+                                                        <div className="flex flex-col items-center text-center p-6 bg-black rounded-xl border border-yellow-700/30">
+                                                            <div className="w-20 h-20 bg-yellow-900/40 rounded-full flex items-center justify-center mb-4 animate-pulse">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                </svg>
+                                                            </div>
+                                                            <p className="text-yellow-200 text-lg mb-2 font-medium font-mono">
+                                                                STANDBY FOR MISSION BRIEFING
+                                                            </p>
+                                                            <p className="text-yellow-500 font-mono">
+                                                                Prepare for deployment. Review protocols and await further instructions.
+                                                            </p>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex flex-col items-center text-center p-6 bg-black rounded-xl border border-yellow-700/30">
+                                                            <div className="w-20 h-20 bg-yellow-900/40 rounded-full flex items-center justify-center mb-4">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                </svg>
+                                                            </div>
+                                                            <p className="text-yellow-200 text-lg mb-2 font-medium font-mono">
+                                                                OPERATION COMPLETE
+                                                            </p>
+                                                            <p className="text-yellow-500 font-mono">
+                                                                Mission files have been sealed. Thank you for your service.
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Additional Information Card */}
+                                        <div className="bg-gradient-to-r from-yellow-900/30 to-amber-900/30 p-5 rounded-xl border border-yellow-700/30 shadow-xl">
+                                            <div className="bg-yellow-900/50 p-2 w-10 h-10 rounded-lg mb-4 flex items-center justify-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                            <h3 className="text-lg font-semibold text-yellow-200 mb-3 font-mono">CONTACT COMMAND</h3>
+                                            <p className="text-sm text-yellow-100/70 leading-relaxed font-mono">
+                                                For mission assistance, encrypted channel available at: <a href="mailto:opensourcechandigarh@chitkara.edu.in" className="text-yellow-300 hover:text-yellow-200 font-medium underline">opensourcechandigarh@chitkara.edu.in</a>
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
-                            </Link>
-                        </div>
+                            </>
+                        )}
                     </div>
                 )}
 
@@ -642,345 +986,7 @@ function Home() {
                     </div>
                 )}
 
-                {/* Main Dashboard Area */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
-                    {/* Dashboard Side Column for Key Stats */}
-                    <div className="lg:col-span-1">
-                        {user && eventStatus === 'active' && teamData && (
-                            <div className="bg-gray-900 border border-yellow-700/30 rounded-xl p-5 shadow-xl mb-6">
-                                <h3 className="text-lg font-bold text-yellow-300 mb-4 flex items-center border-b border-yellow-700/30 pb-3 font-mono">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
-                                    </svg>
-                                    INTEL REPORT
-                                </h3>
 
-                                <div className="space-y-4">
-                                    {/* Agent Status */}
-                                    <div className="bg-black rounded-lg p-3 border border-yellow-700/30">
-                                        <div className="text-xs text-yellow-500 uppercase tracking-wider mb-1">Agent Status</div>
-                                        <div className="flex items-center">
-                                            <div className="h-2 w-2 rounded-full bg-yellow-500 mr-2 animate-pulse"></div>
-                                            <span className="text-yellow-300 font-medium">Active</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Team Performance */}
-                                    <div className="bg-black rounded-lg p-3 border border-yellow-700/30">
-                                        <div className="text-xs text-yellow-500 uppercase tracking-wider mb-1">Performance</div>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-yellow-300 font-medium">{calculateTeamProgress().percent}% Complete</span>
-                                            <span className="text-xs font-mono text-yellow-400">{calculateTeamProgress().solved}/{calculateTeamProgress().total}</span>
-                                        </div>
-                                        <div className="w-full bg-gray-800 rounded-full h-2 mt-2">
-                                            <div
-                                                className="bg-yellow-500 h-2 rounded-full"
-                                                style={{ width: `${calculateTeamProgress().percent}%` }}
-                                            ></div>
-                                        </div>
-                                    </div>
-
-                                    {/* Score */}
-                                    <div className="bg-black rounded-lg p-3 border border-yellow-700/30">
-                                        <div className="text-xs text-yellow-500 uppercase tracking-wider mb-1">Score</div>
-                                        <div className="flex items-center">
-                                            <span className="text-2xl font-bold text-yellow-400 font-mono">{teamData.score || 0}</span>
-                                            <span className="ml-2 text-xs text-yellow-500">points</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Challenges Completed */}
-                                    <div className="bg-black rounded-lg p-3 border border-yellow-700/30">
-                                        <div className="text-xs text-yellow-500 uppercase tracking-wider mb-1">Challenges Completed</div>
-                                        <div className="flex items-center">
-                                            <span className="text-2xl font-bold text-yellow-400 font-mono">{calculateTeamProgress().solved}</span>
-                                            <span className="ml-2 text-xs text-yellow-500">of {calculateTeamProgress().total}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Quick Link for Challenges */}
-                                <Link to="/challenges" className="mt-4 flex items-center justify-center w-full py-3 bg-yellow-900/60 hover:bg-yellow-800/80 text-yellow-200 rounded-lg border border-yellow-700/50 transition-all shadow-md">
-                                    <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                    </svg>
-                                    View Active Missions
-                                </Link>
-                            </div>
-                        )}
-
-                        {/* Info Cards - Redesigned for yellow/black theme */}
-                        <div className="space-y-4">
-                            <div className="bg-black p-5 rounded-xl border border-yellow-700/30 shadow-xl hover:shadow-yellow-900/10 transition-all duration-300">
-                                <div className="bg-yellow-900/50 p-2 w-10 h-10 rounded-lg mb-4 flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <h3 className="text-lg font-semibold text-yellow-200 mb-3">About CID CTF</h3>
-                                <p className="text-sm text-yellow-100/70 leading-relaxed font-mono">
-                                    The CID Capture The Flag competition is designed to test your cybersecurity skills in a challenging environment. Compete with other teams to solve security challenges.
-                                </p>
-                            </div>
-
-                            <div className="bg-black p-5 rounded-xl border border-yellow-700/30 shadow-xl hover:shadow-yellow-900/10 transition-all duration-300">
-                                <div className="bg-yellow-900/50 p-2 w-10 h-10 rounded-lg mb-4 flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                    </svg>
-                                </div>
-                                <h3 className="text-lg font-semibold text-yellow-200 mb-3">Rules of Engagement</h3>
-                                <ul className="text-sm text-yellow-100/70 list-disc pl-5 space-y-2 font-mono">
-                                    <li>No attacking the infrastructure</li>
-                                    <li>No sharing of flags or solutions</li>
-                                    <li>Be respectful to other participants</li>
-                                    <li>Any form of cheating = disqualification</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Main Content Area - 2/3 width */}
-                    <div className="lg:col-span-2">
-                        {/* Welcome Panel */}
-                        <div className="bg-gray-900 border border-yellow-700/30 rounded-xl p-6 shadow-xl mb-6 backdrop-blur-sm">
-                            <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-300 mb-4 font-mono tracking-tight">
-                                {user ? 'WELCOME BACK, AGENT' : 'CID CYBERSECURITY DIVISION'}
-                            </h2>
-
-                            {!user ? (
-                                <div className="py-6">
-                                    <div className="flex items-center mb-6">
-                                        <span className="h-3 w-3 bg-yellow-500 animate-pulse rounded-full mr-2"></span>
-                                        <p className="text-yellow-300 text-lg font-mono">
-                                            Authenticate to access classified CTF missions and test your security skills.
-                                        </p>
-                                    </div>
-
-                                    <div className="flex space-x-4">
-                                        <Link
-                                            to="/login"
-                                            className="px-5 py-3 bg-yellow-600 hover:bg-yellow-500 text-black font-medium rounded-lg shadow-lg hover:shadow-yellow-900/50 transition-all duration-300 flex items-center border border-yellow-700"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" />
-                                            </svg>
-                                            Login
-                                        </Link>
-                                        <Link
-                                            to="/register"
-                                            className="px-5 py-3 bg-gray-800 hover:bg-gray-700 text-yellow-200 font-medium rounded-lg shadow-lg hover:shadow-gray-900/30 transition-all duration-300 flex items-center border border-yellow-700/30"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                                <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
-                                            </svg>
-                                            Register
-                                        </Link>
-                                    </div>
-                                </div>
-                            ) : eventStatus === 'active' ? (
-                                <div>
-                                    <div className="flex items-center mb-6">
-                                        <span className="h-3 w-3 bg-yellow-500 animate-pulse rounded-full mr-2"></span>
-                                        <p className="text-yellow-300 font-mono">
-                                            SECURE CONNECTION ESTABLISHED | SYSTEM ACCESS GRANTED
-                                        </p>
-                                    </div>
-
-                                    {/* Challenge Link Card */}
-                                    <div className="mb-6">
-                                        <Link to="/challenges" className="block p-5 bg-gradient-to-r from-yellow-900/50 to-yellow-800/40 rounded-xl border border-yellow-700/30 hover:border-yellow-600/50 transition-all duration-300 hover:shadow-lg group">
-                                            <div className="flex items-center">
-                                                <div className="p-3 bg-yellow-800/50 rounded-lg mr-4 group-hover:bg-yellow-700/70 transition-all">
-                                                    <svg className="h-7 w-7 text-yellow-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                                    </svg>
-                                                </div>
-                                                <div className="flex-1">
-                                                    <h3 className="text-xl font-semibold text-yellow-300 mb-1 group-hover:text-yellow-200 transition-colors font-mono">
-                                                        ACCESS CHALLENGES
-                                                    </h3>
-                                                    <p className="text-sm text-yellow-400/70 font-mono">
-                                                        Decrypt, exploit, and solve missions to earn points and climb the ranks
-                                                    </p>
-                                                </div>
-                                                <div className="text-yellow-400 group-hover:translate-x-2 transition-transform duration-300">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    </div>
-
-                                    {/* All challenges completed message */}
-                                    {allChallengesCompleted && (
-                                        <div className="bg-yellow-900/30 border border-yellow-700/50 rounded-lg p-4 mb-8 font-mono">
-                                            <div className="flex items-center">
-                                                <div className="flex-shrink-0">
-                                                    <svg className="h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                                    </svg>
-                                                </div>
-                                                <div className="ml-3">
-                                                    <p className="text-yellow-300">
-                                                        <span className="font-semibold">MISSION COMPLETE:</span> All challenges successfully neutralized.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Leaderboard Section */}
-                                    <div className="mt-8">
-                                        <div className="flex justify-between items-center mb-4">
-                                            <h3 className="text-lg font-semibold text-yellow-300 flex items-center font-mono">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
-                                                </svg>
-                                                FIELD OPERATIONS - TOP AGENTS
-                                            </h3>
-                                            <button
-                                                onClick={fetchLeaderboard}
-                                                className="flex items-center px-3 py-1.5 bg-yellow-900/50 text-yellow-300 hover:bg-yellow-800/50 rounded-md transition-all text-sm font-medium border border-yellow-700/50"
-                                                disabled={leaderboardLoading}
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 mr-1.5 ${leaderboardLoading ? 'animate-spin' : ''}`} viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
-                                                </svg>
-                                                {leaderboardLoading ? 'SYNCING...' : 'SYNC'}
-                                            </button>
-                                        </div>
-
-                                        {leaderboardLoading ? (
-                                            <div className="flex justify-center py-6 bg-black border border-yellow-700/30 rounded-lg">
-                                                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-yellow-400"></div>
-                                            </div>
-                                        ) : (
-                                            <div className="overflow-x-auto bg-black rounded-lg border border-yellow-700/30 shadow-lg">
-                                                <table className="min-w-full divide-y divide-yellow-700/30 font-mono">
-                                                    <thead className="bg-yellow-900/30">
-                                                        <tr>
-                                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-yellow-400 uppercase tracking-wider">
-                                                                Rank
-                                                            </th>
-                                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-yellow-400 uppercase tracking-wider">
-                                                                Team
-                                                            </th>
-                                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-yellow-400 uppercase tracking-wider">
-                                                                Status
-                                                            </th>
-                                                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-yellow-400 uppercase tracking-wider">
-                                                                Score
-                                                            </th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody className="divide-y divide-yellow-700/20">
-                                                        {allTeams.length > 0 ? allTeams.slice(0, 8).map((team, index) => {
-                                                            // Special styling for current team
-                                                            const isCurrentTeam = teamData && team.id === teamData.id;
-
-                                                            // Different styling for top teams
-                                                            let rowClass = "transition-colors";
-                                                            if (isCurrentTeam) rowClass += " bg-yellow-900/30";
-                                                            else if (index === 0) rowClass += " bg-yellow-800/20"; // 1st
-                                                            else if (index === 1) rowClass += " bg-yellow-900/10";   // 2nd
-                                                            else if (index === 2) rowClass += " bg-yellow-900/5"; // 3rd
-
-                                                            return (
-                                                                <tr key={team.id} className={rowClass}>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-yellow-300">
-                                                                        {index + 1}
-                                                                        {index < 3 && (
-                                                                            <span className="ml-1">
-                                                                                {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
-                                                                            </span>
-                                                                        )}
-                                                                    </td>
-                                                                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${isCurrentTeam ? "font-bold text-yellow-300" : "text-yellow-200"}`}>
-                                                                        {team.name}
-                                                                        {isCurrentTeam && (
-                                                                            <span className="ml-2 text-xs bg-yellow-900/50 text-yellow-300 px-2 py-0.5 rounded border border-yellow-700/50">YOU</span>
-                                                                        )}
-                                                                    </td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-yellow-200/70">
-                                                                        <div className="w-full bg-gray-800 rounded-full h-1.5">
-                                                                            <div
-                                                                                className={`${isCurrentTeam ? "bg-yellow-500" : "bg-yellow-700/50"} h-1.5 rounded-full`}
-                                                                                style={{ width: `${challenges.length > 0 ? ((team.solvedChallenges?.length || 0) / challenges.length) * 100 : 0}%` }}
-                                                                            ></div>
-                                                                        </div>
-                                                                        <span className="text-xs text-yellow-500 mt-1 block">
-                                                                            {team.solvedChallenges?.length || 0} / {challenges.length}
-                                                                        </span>
-                                                                    </td>
-                                                                    <td className={`px-6 py-4 whitespace-nowrap text-sm text-right ${isCurrentTeam ? "font-bold text-yellow-300" : "font-medium text-yellow-200"}`}>
-                                                                        {team.score || 0}
-                                                                    </td>
-                                                                </tr>
-                                                            );
-                                                        }) : (
-                                                            <tr>
-                                                                <td colSpan="4" className="px-6 py-4 text-sm text-center text-yellow-500">
-                                                                    No teams have registered yet
-                                                                </td>
-                                                            </tr>
-                                                        )}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="py-6">
-                                    {eventStatus === 'not-started' ? (
-                                        <div className="flex flex-col items-center text-center p-6 bg-black rounded-xl border border-yellow-700/30">
-                                            <div className="w-20 h-20 bg-yellow-900/40 rounded-full flex items-center justify-center mb-4 animate-pulse">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            </div>
-                                            <p className="text-yellow-200 text-lg mb-2 font-medium font-mono">
-                                                STANDBY FOR MISSION BRIEFING
-                                            </p>
-                                            <p className="text-yellow-500 font-mono">
-                                                Prepare for deployment. Review protocols and await further instructions.
-                                            </p>
-                                        </div>
-                                    ) : (
-                                        <div className="flex flex-col items-center text-center p-6 bg-black rounded-xl border border-yellow-700/30">
-                                            <div className="w-20 h-20 bg-yellow-900/40 rounded-full flex items-center justify-center mb-4">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            </div>
-                                            <p className="text-yellow-200 text-lg mb-2 font-medium font-mono">
-                                                OPERATION COMPLETE
-                                            </p>
-                                            <p className="text-yellow-500 font-mono">
-                                                Mission files have been sealed. Thank you for your service.
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Additional Information Card */}
-                        <div className="bg-gradient-to-r from-yellow-900/30 to-amber-900/30 p-5 rounded-xl border border-yellow-700/30 shadow-xl">
-                            <div className="bg-yellow-900/50 p-2 w-10 h-10 rounded-lg mb-4 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-semibold text-yellow-200 mb-3 font-mono">CONTACT COMMAND</h3>
-                            <p className="text-sm text-yellow-100/70 leading-relaxed font-mono">
-                                For mission assistance, encrypted channel available at: <a href="mailto:opensourcechandigarh@chitkara.edu.in" className="text-yellow-300 hover:text-yellow-200 font-medium underline">opensourcechandigarh@chitkara.edu.in</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
             </main>
 
             {/* Yellow/Black themed footer */}

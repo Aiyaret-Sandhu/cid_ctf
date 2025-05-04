@@ -9,6 +9,7 @@ import Admin from './pages/Admin';
 import Challenges from './pages/Challenges';
 import Leaderboard from './pages/Leaderboard';
 import Matchers from './pages/Matchers';
+import FinalistWaiting from './pages/FinalistWaiting';
 
 
 import { Analytics } from "@vercel/analytics/react"
@@ -94,7 +95,13 @@ function App() {
                 <Matchers />
               </ProtectedRoute>
             } />
-            
+
+            <Route path="/finalist-waiting" element={
+              <ProtectedRoute>
+                <FinalistWaiting />
+              </ProtectedRoute>
+            } />
+
           </Routes>
         </div>
       </Router>

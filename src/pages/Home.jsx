@@ -549,6 +549,42 @@ function Home() {
                     </div>
                 )}
 
+                {/* Active Challenges Section */}
+                {eventStatus === 'active' && user && teamData && (
+                    <div className="mb-12">
+                        <h2 className="text-2xl font-bold text-yellow-400 mb-6 font-mono tracking-wider flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                            </svg>
+                            ACTIVE CHALLENGES
+                        </h2>
+
+                        <div>
+                            <Link
+                                // Conditionally navigate to finalist waiting page if they're already a finalist
+                                to={teamData.isFinalist ? "/finalist-waiting" : "/challenges"}
+                                className="group bg-black/30 backdrop-blur-sm border border-yellow-400/30 rounded-lg p-6 hover:bg-black/50 transition-all flex items-center justify-between"
+                            >
+                                <div>
+                                    <h3 className="text-xl font-bold text-yellow-400 font-mono mb-2">
+                                        CID Challenge Files
+                                    </h3>
+                                    <p className="text-yellow-100/70">
+                                        {teamData.isFinalist
+                                            ? "You've qualified as a finalist. Check your status."
+                                            : "Access the active challenge files to compete in the CTF"}
+                                    </p>
+                                </div>
+                                <div className="text-yellow-400 group-hover:translate-x-2 transition-transform duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                    </svg>
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
+                )}
+
 
                 {/* Tab Switches Alert Section */}
                 {teamData && teamData.challengeAttempts && Object.keys(teamData.challengeAttempts).some(id =>

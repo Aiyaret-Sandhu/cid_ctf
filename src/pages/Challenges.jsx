@@ -1090,7 +1090,25 @@ function Challenges() {
                     // Modify the flag submission handler around line ~1090 (in the flag match success section)
                     if (allSolved) {
                         try {
-                            // Update team's completedAt time if it doesn't exist yet
+
+
+                            // First check if the team is already a finalist
+                            if (teamData.isFinalist) {
+                                // They are already a finalist, so redirect to the waiting page
+                                setSubmitResult({
+                                    success: true,
+                                    message: "You've already qualified as a finalist. Redirecting..."
+                                });
+
+                                setTimeout(() => {
+                                    exitFullscreen();
+                                    navigate('/finalist-waiting');
+                                }, 3000);
+                                return;
+                            }
+                            // Update team's
+                            // 
+                            //  completedAt time if it doesn't exist yet
                             if (!teamData.completedAt) {
                                 await updateDoc(teamRef, {
                                     completedAt: new Date(),

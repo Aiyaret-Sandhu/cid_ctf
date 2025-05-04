@@ -549,6 +549,63 @@ function Home() {
                     </div>
                 )}
 
+
+                {/* Tab Switches Alert Section */}
+                {teamData && teamData.challengeAttempts && Object.keys(teamData.challengeAttempts).some(id =>
+                    teamData.challengeAttempts[id].lockedDueToTabSwitches) && (
+                        <div className="bg-red-900/30 border border-red-700/50 rounded-lg p-4 mb-6 font-mono">
+                            <div className="flex items-center mb-2">
+                                <div className="flex-shrink-0">
+                                    <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div className="ml-3">
+                                    <p className="text-red-300">
+                                        <span className="font-semibold">LOCKED CHALLENGES:</span> The following challenges were locked due to excessive tab switching.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="pl-8 mt-2">
+                                <ul className="list-disc space-y-1">
+                                    {Object.entries(teamData.challengeAttempts)
+                                        .filter(([_, data]) => data.lockedDueToTabSwitches)
+                                        .map(([challengeId, data]) => {
+                                            // Find the challenge details
+                                            const challenge = challenges.find(c => c.id === challengeId);
+                                            return (
+                                                <li key={challengeId} className="text-red-200">
+                                                    {challenge ? challenge.title : "Unknown Challenge"} -
+                                                    <span className="text-red-300"> {data.tabSwitches} tab switches detected</span>
+                                                </li>
+                                            );
+                                        })}
+                                </ul>
+                            </div>
+                        </div>
+                    )}
+
+                {/* Tab Switch Counter and Limit */}
+                {settings?.maxTabSwitches && teamData && eventStatus === 'active' && (
+                    <div className="bg-yellow-900/30 border border-yellow-700/50 rounded-lg p-4 mb-6 font-mono">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <svg className="h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3 1h10v8H5V6z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div className="ml-3 flex justify-between w-full">
+                                <p className="text-yellow-300">
+                                    <span className="font-semibold">TAB SWITCHING LIMIT:</span> Maximum {settings.maxTabSwitches} tab switches allowed per challenge
+                                </p>
+                                <p className="text-yellow-300">
+                                    <span className="font-semibold">TOTAL TAB SWITCHES:</span> {teamData.totalTabSwitches || 0}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Main Dashboard Area */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
                     {/* Dashboard Side Column for Key Stats */}

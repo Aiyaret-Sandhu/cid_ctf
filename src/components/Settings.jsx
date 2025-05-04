@@ -42,6 +42,7 @@ const Settings = memo(({ loading, setLoading }) => {
             nextRoundInfo: data.nextRoundInfo || '',
             eliminationMessage: data.eliminationMessage || 'Sorry, you did not qualify for the next round.',
             enableTeamGrouping: data.enableTeamGrouping || false,
+            maxTabSwitches: data.maxTabSwitches || 3,
             groupCount: data.groupCount || 2,
             // Dynamically load all group messages
             ...Array.from({ length: 5 }).reduce((acc, _, i) => {
@@ -91,6 +92,7 @@ const Settings = memo(({ loading, setLoading }) => {
         eliminationMessage: settingsData.eliminationMessage,
         enableTeamGrouping: settingsData.enableTeamGrouping || false,
         groupCount: parseInt(settingsData.groupCount || 2),
+        maxTabSwitches: parseInt(settingsData.maxTabSwitches || 6), // Add this line
       };
 
       // Only add group messages for the actual number of groups defined
@@ -162,6 +164,24 @@ const Settings = memo(({ loading, setLoading }) => {
                 After this time, users will see "Event has ended"
               </p>
             </div>
+          </div>
+
+          <div>
+            <label htmlFor="maxTabSwitches" className="block text-sm font-medium text-gray-700">
+              Maximum Tab Switches Allowed
+            </label>
+            <input
+              type="number"
+              id="maxTabSwitches"
+              value={settingsData.maxTabSwitches || 3}
+              onChange={handleInputChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              min="1"
+              required
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Maximum number of tab switches allowed before disqualifying a team from a challenge
+            </p>
           </div>
 
           <div className="border-t border-gray-200 pt-6">

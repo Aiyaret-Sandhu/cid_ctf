@@ -250,6 +250,59 @@ function Challenges() {
     };
 
     useEffect(() => {
+        const checkTabSwitchLimit = async () => {
+            if (!teamData || !selectedChallenge) return;
+
+            try {
+                // Get settings to check the max tab switches allowed
+                const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
+                if (settingsDoc.exists()) {
+                    const settingsData = settingsDoc.data();
+                    const maxTabSwitches = settingsData.maxTabSwitches || 3; // Default to 3 if not set
+
+                    // If user exceeds tab switch limit
+                    if (tabSwitchCount >= maxTabSwitches) {
+                        console.log(`Tab switch limit (${maxTabSwitches}) exceeded. Locking challenge.`);
+
+                        // Update the team document to mark this challenge as attempted
+                        const teamRef = doc(db, "teams", teamData.id);
+                        await updateDoc(teamRef, {
+                            attemptedChallenges: arrayUnion(selectedChallenge.id),
+                            [`challengeAttempts.${selectedChallenge.id}`]: {
+                                tabSwitches: tabSwitchCount,
+                                attemptedAt: new Date(),
+                                lockedDueToTabSwitches: true
+                            },
+                            // Add to totalTabSwitches for stats
+                            totalTabSwitches: (teamData.totalTabSwitches || 0) + tabSwitchCount
+                        });
+
+                        // Show alert and redirect
+                        setSubmitResult({
+                            success: false,
+                            message: `Maximum tab switches (${maxTabSwitches}) exceeded. This challenge is now locked.`
+                        });
+
+                        // Exit fullscreen and redirect to home after a delay
+                        setTimeout(() => {
+                            setIsSubmitting(true);
+                            exitFullscreen();
+                            navigate('/home');
+                        }, 3000);
+                    }
+                }
+            } catch (error) {
+                console.error("Error checking tab switch limit:", error);
+            }
+        };
+
+        // Check whenever tabSwitchCount changes
+        if (tabSwitchCount > 0) {
+            checkTabSwitchLimit();
+        }
+    }, [tabSwitchCount, selectedChallenge, teamData, navigate]);
+
+    useEffect(() => {
         let escKeyProcessing = false;
 
         const handleFullscreenChange = () => {
@@ -258,7 +311,7 @@ function Challenges() {
                 document.mozFullScreenElement ||
                 document.msFullscreenElement;
 
-            // console.log("Fullscreen state changed:", isCurrentlyFullscreen ? "in fullscreen" : "exiting fullscreen");
+            console.log("Fullscreen state changed:", isCurrentlyFullscreen ? "in fullscreen" : "exiting fullscreen");
 
             // If we're exiting fullscreen unexpectedly (via ESC key)
             if (!isCurrentlyFullscreen && isFullscreen && selectedChallenge && !escKeyProcessing) {
@@ -277,7 +330,26 @@ function Challenges() {
                     if (teamData && selectedChallenge) {
                         const teamRef = doc(db, "teams", teamData.id);
                         updateDoc(teamRef, {
-                            [`challengeAttempts.${selectedChallenge.id}.tabSwitches`]: newTabSwitchCount
+                            [`challengeAttempts.${selectedChallenge.id}.tabSwitches`]: newTabSwitchCount,
+                            // Also update the total tab switches count
+                            totalTabSwitches: (teamData.totalTabSwitches || 0) + 1
+                        }).then(async () => {
+                            // After updating the count, check if we've hit the limit
+                            const settingsDoc = await getDoc(doc(db, "settings", "eventConfig"));
+                            if (settingsDoc.exists()) {
+                                const settingsData = settingsDoc.data();
+                                const maxTabSwitches = settingsData.maxTabSwitches || 3;
+
+                                if (newTabSwitchCount >= maxTabSwitches) {
+                                    // Show exit dialog
+                                    setShowExitDialog(true);
+
+                                    // Update as locked due to tab switches
+                                    updateDoc(teamRef, {
+                                        [`challengeAttempts.${selectedChallenge.id}.lockedDueToTabSwitches`]: true
+                                    });
+                                }
+                            }
                         }).catch(error => {
                             console.error("Error updating tab switch count:", error);
                         });
@@ -456,7 +528,7 @@ function Challenges() {
                     }
                 });
 
-                // console.log("Challenge marked as attempted:", challengeId);
+                console.log("Challenge marked as attempted:", challengeId);
             } catch (error) {
                 console.error("Error marking challenge as attempted:", error);
             }
@@ -734,12 +806,18 @@ function Challenges() {
                     const challengeIndex = challengesList.findIndex(c => c.id === challengeId);
 
                     // Check if challenge has already been attempted but not solved
-                    const isAttempted = teamData?.attemptedChallenges?.includes(challengeId) &&
-                        !teamData?.solvedChallenges?.includes(challengeId);
+                    const isAttempted = teamData?.attemptedChallenges?.includes(challenge.id) &&
+                        !teamData?.solvedChallenges?.includes(challenge.id);
+
+                    // Check if challenge was locked due to tab switches
+                    const wasLockedDueToTabSwitches = teamData?.challengeAttempts?.[challenge.id]?.lockedDueToTabSwitches;
 
                     if (isAttempted) {
-                        // Redirect to challenges page without ID if already attempted
-                        navigate('/challenges');
+                        if (wasLockedDueToTabSwitches) {
+                            alert("You've exceeded the maximum tab switches for this challenge. It is now locked.");
+                        } else {
+                            alert("You've already attempted this challenge and cannot access it again.");
+                        }
                         return;
                     }
 
